@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Linear Regression (Matrix form)</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']]
+            }
+        };
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Table of Contents</h2>
+        </div>
+        <nav class="toc">
+            <div class="toc-chapter">
+                <input type="checkbox" id="toc-chapter-1" class="toc-chapter-toggle" checked>
+                <label for="toc-chapter-1" class="toc-chapter-label">
+                    <span class="toc-chapter-icon">▼</span>
+                    <span>Chapter 1: Linear Regression</span>
+                </label>
+                <div class="toc-sections">
+                    <a href="chapter-0.html" class="toc-item active">Section 1: Simple Linear Regression (Matrix form)</a>
+                    <a href="chapter-1.html" class="toc-item">Section 2: 3 Linear Regression Mle</a>
+                    <a href="chapter-2.html" class="toc-item">Section 3: Calculating bias of $\hat\beta$</a>
+                    <a href="chapter-3.html" class="toc-item">Section 4: Linearity</a>
+                    <a href="chapter-4.html" class="toc-item">Section 5: Normality</a>
+                    <a href="chapter-5.html" class="toc-item">Section 6: Independence and homoskedasticity</a>
+                    <a href="chapter-6.html" class="toc-item">Section 7: Multicollinearity</a>
+                    <a href="chapter-7.html" class="toc-item">Section 8: Strict Exogeneity</a>
+                    <a href="chapter-8.html" class="toc-item">Section 9: Regularization</a>
+                    <a href="chapter-9.html" class="toc-item">Section 10: Bayesian Regression</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="main-content">
+        <div class="content-pane">
+            <div class="chapter-content">
+                <h1 class="chapter-title">Simple Linear Regression (Matrix form)</h1>
+                <div class="markdown-cell"><h2>Simple Linear Regression (Matrix form)</h2></div>
+                <div class="markdown-cell"><p>The Simple Linear Regression (SLR) model in scaler form is represented as</p>
+$$ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_n x_n + \epsilon \quad where \quad \epsilon \sim \mathcal{N}(0, \sigma^2) $$
+
+<p>This can be written for each obeservation in the data</p>
+\begin{align}
+y_1 & = \beta_0 + \beta_1 x_{11} + \beta_2 x_{12} + \cdots + \beta_p x_{1p} + \epsilon_1 & \\
+y_2 & = \beta_0 + \beta_1 x_{21} + \beta_2 x_{22} + \cdots + \beta_p x_{2p} + \epsilon_2 & \forall \; n \in [1,N] \; \text{and} \; p \in [1,p]\\
+\vdots & \qquad \vdots & \\
+y_n & = \beta_0 + \beta_1 x_{n1} + \beta_2 x_{n2} + \cdots + \beta_p x_{np} + \epsilon_n & 
+\end{align}</div>
+                <div class="markdown-cell"><p>The same SLR model can be represented in matrix form</p>
+\begin{align}
+\begin{bmatrix}
+    y_1 \\
+    y_2 \\
+    \vdots \\
+    y_n
+\end{bmatrix}
+&=
+\begin{bmatrix}
+    \beta_0 + \beta_1 x_{11} + \beta_2 x_{12} + \cdots + \beta_p x_{1p} \\
+    \beta_0 + \beta_1 x_{21} + \beta_2 x_{22} + \cdots + \beta_p x_{2p} \\
+    \vdots \\
+    \beta_0 + \beta_1 x_{n1} + \beta_2 x_{n2} + \cdots + \beta_p x_{np}
+\end{bmatrix} + 
+\begin{bmatrix}
+    \epsilon_1 \\
+    \epsilon_2 \\
+    \vdots \\
+    \epsilon_n
+\end{bmatrix}
+\end{align}</div>
+                <div class="markdown-cell"><p>which can be further broken as</p>
+\begin{align}
+\begin{bmatrix}
+    y_1 \\
+    y_2 \\
+    \vdots \\
+    y_n
+\end{bmatrix}
+&=
+\begin{bmatrix}
+    1 & x_{11} & x_{12} & \cdots & x_{1p} \\
+    1 & x_{21} & x_{22} & \cdots & x_{2p} \\
+    & & \vdots & & \\
+    1 & x_{n1} & x_{n2} & \cdots & x_{np}
+\end{bmatrix}
+\begin{bmatrix}
+    \beta_0 \\
+    \beta_1 \\
+    \vdots \\
+    \beta_p
+\end{bmatrix} + 
+\begin{bmatrix}
+    \epsilon_1 \\
+    \epsilon_2 \\
+    \vdots \\
+    \epsilon_n
+\end{bmatrix}
+\end{align}</div>
+                <div class="markdown-cell"><p>or simply as</p>
+$$ \textbf{y} = X\mathbf{\beta} + \mathbf{\epsilon} $$
+
+<p>where</p>
+<ul>
+<li>$X$ is called the design matrix.</li>
+<li>$\mathbf{\beta}$ is the vector of coefficients.</li>
+<li>$\mathbf{\epsilon}$ is the error vector.</li>
+<li>$\textbf{y}$ is the response or target vector.</li>
+</ul></div>
+                <div class="markdown-cell"><h3>Distributional Assumptions in Matrix Form</h3>
+$$\mathbf{\epsilon} \sim \mathcal{N}(\textbf{0}, \Sigma)$$
+
+<p>where $\Sigma$ = covariance matrix</p>
+<p>For case of ordinary least square (OLS) where there is a constant variance for all features $\Sigma = \sigma^2I $, distribution of error can be re-written as</p>
+$$\mathbf{\epsilon} \sim \mathcal{N}(\textbf{0}, \sigma^2I)$$
+
+<p>and hence distribution of target (y) will be</p>
+$$\textbf{y} \sim \mathcal{N}(X\mathbf{\beta}, \sigma^2I)$$</div>
+                <div class="markdown-cell"><p>Therefore,</p>
+<p>Covariance of error ($\epsilon$)</p>
+\begin{align}
+\sigma^2_{\epsilon} = Cov
+\begin{bmatrix}
+    \epsilon_1 \\
+    \epsilon_2 \\
+    \vdots \\
+    \epsilon_n
+\end{bmatrix} = \sigma^2I = 
+\begin{bmatrix}
+    \sigma^2 & 0 & \cdots & 0 \\
+    0 & \sigma^2 & \cdots & 0 \\
+    \vdots & \vdots & \ddots & \vdots \\
+    0 & 0 & \cdots & \sigma^2
+\end{bmatrix}
+\end{align}</div>
+                <div class="markdown-cell"><p>Similarly, Covariance of target ($\textbf{y}$)</p>
+\begin{align}
+\sigma^2_{\textbf{y}} = Cov
+\begin{bmatrix}
+    y_1 \\
+    y_2 \\
+    \vdots \\
+    y_n
+\end{bmatrix} = \sigma^2I
+\end{align}</div>
+                <div class="markdown-cell"><h3>Parameter Estimation</h3>
+<p>Rearranging the SLR model equation we can get residuals as</p>
+$$\mathbf{\epsilon} = \textbf{y} − X\mathbf{\beta}$$
+
+<p>.</p>
+<p>We want to minimize sum of squared residuals.</p>
+$$ \text{minimize} \quad \sum \epsilon_i^2 = [\epsilon_1 \; \epsilon_2 \; \cdots \; \epsilon_n] \begin{bmatrix}\epsilon_1 \\ \epsilon_2 \\ \vdots \\ \epsilon_n\end{bmatrix} = \mathbf{\epsilon}^T\mathbf{\epsilon} $$</div>
+                <div class="markdown-cell"><p>or </p>
+$$ \text{minimize} \quad \mathbf{\epsilon}^T\mathbf{\epsilon} = (\textbf{y} − X\mathbf{\beta})^T(\textbf{y} − X\mathbf{\beta})$$</div>
+                <div class="markdown-cell"><p>To find the $\mathbf{\beta}$ which minimize above equation, the differentiation of above equation with respect to $\beta$ should be equal to zero vector</p>
+<p>i.e.</p>
+$$ \frac{d}{d\beta}(\mathbf{\epsilon}^T\mathbf{\epsilon}) = \frac{d}{d\beta}(\textbf{y} − X\mathbf{\beta})^T(\textbf{y} − X\mathbf{\beta}) = \textbf{0} $$
+
+$$ -2X^T(\textbf{y} − X\mathbf{\beta}) = \textbf{0} $$
+
+$$ X^T\textbf{y} = X^TX\mathbf{\beta} $$
+
+<p>or</p>
+$$ X^T\textbf{y} = (X^TX)\mathbf{\beta} $$
+
+<p>Left multiplying both side by $(X^TX)^{-1}$ we get</p>
+$$ (X^TX)^{-1}X^T\textbf{y} = (X^TX)^{-1}(X^TX)\mathbf{\beta} $$
+
+<p>therefore,</p>
+$$ \mathbf{\beta} = (X^TX)^{-1}X^T\textbf{y} $$</div>
+                <div class="markdown-cell"><h3>Hat Matrix</h3>
+$$ \hat{\textbf{y}} = X\mathbf{\beta} $$
+
+$$ \hat{\textbf{y}} = X(X^TX)^{-1}X^T\textbf{y} $$
+
+$$ \hat{\textbf{y}} = H\textbf{y} $$
+
+<p>where $H = X(X^TX)^{-1}X^T$. We call this the "hat matrix" because it turns $\textbf{y}$ into $\hat{\textbf{y}}$.</p>
+<p>We can now express residual ($\epsilon$) in terms of hat matrix as</p>
+\begin{align}
+\mathbf{\epsilon} &= \textbf{y} - \hat{\textbf{y}} \\
+                  &= \textbf{y} - H\textbf{y} \\
+                  &= (I - H)\textbf{y}
+\end{align}
+
+<p>Notice that the matrices $H$ and $(I − H)$ have two special properties. They are</p>
+<ul>
+<li>Symmetric: $H = H^T$ and $(I − H)^T = (I − H)$.</li>
+<li>Idempotent: $H^2 = H$ and $(I − H)^T(I − H) = (I − H)$</li>
+</ul></div>
+                <div class="markdown-cell"><h3>Estimated Covariance Matrix of $\beta$</h3>
+<ul>
+<li>$\beta$ is a linear combination of the elements of <strong>y</strong>.</li>
+<li>These estimates are normal if <strong>y</strong> is normal.</li>
+</ul>
+<h4>Useful theorem</h4>
+<p>Suppose $U \sim \mathcal{N}(\mu, \Sigma)$, a multivariate normal vector, and $V = c + DU$, a linear<br />
+transformation of U where c is a vector and D is a matrix. Then $V \sim \mathcal{N}(c + D\mu, D\Sigma D^T)$.</p>
+<p>comparing this to SLR, we have</p>
+$$U = \textbf{y} \sim \mathcal{N}(X\mathbf{\beta}, \sigma_{\epsilon}^2I) \quad and \quad V = \mathbf{\beta} = [(X^TX)^{-1}X^T]\textbf{y}$$
+
+$$D = (X^TX)^{-1}X^T$$
+
+$$\mu = X\mathbf{\beta} \quad and \quad \Sigma = \sigma_{\epsilon}^2I$$
+
+$$c = \textbf{0}$$
+
+$$V = \mathbf{\beta}$$
+
+<p>Above theorem tells us the vector $\mathbf{\beta}$ is normally distributed with</p>
+\begin{align}
+\text{mean} &= (X^TX)^{-1}X^TX\mathbf{\beta} \\
+            &= (X^TX)^{-1}(X^TX)\mathbf{\beta} \\
+            &= \mathbf{\beta}
+\end{align}
+
+\begin{align}
+\text{Cov} &= ((X^TX)^{-1}X^T)\sigma_{\epsilon}^2I((X^TX)^{-1}X^T)^T \\
+           &= \sigma_{\epsilon}^2((X^TX)^{-1}X^T)I((X^TX)^{-1}X^T)^T \\
+           &= \sigma_{\epsilon}^2(X^TX)^{-1}X^T ((X^TX)^{-1})^T X \\
+           &= \sigma_{\epsilon}^2(X^TX)^{-1}(X^TX) ((X^TX)^{-1}) \\
+           &= \sigma_{\epsilon}^2(X^TX)^{-1}
+\end{align}
+
+<p>using the fact that both $X^TX$ and its inverse are symmetric, so $((X^TX)^{−1})^T = (X^TX)^{−1}$</p>
+<p>Hence,</p>
+$$ \mathbf{\beta} \sim \mathcal{N}(\beta, \sigma_{\epsilon}^2(X^TX)^{-1}) $$
+
+<p>Therefore, standard deviation of estimates ($\beta$) =  $\sqrt{\sigma_{\epsilon}^2(X^TX)^{-1}}$</p></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>

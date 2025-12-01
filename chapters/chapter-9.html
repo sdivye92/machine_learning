@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayesian Regression</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']]
+            }
+        };
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Table of Contents</h2>
+        </div>
+        <nav class="toc">
+            <div class="toc-chapter">
+                <input type="checkbox" id="toc-chapter-1" class="toc-chapter-toggle" checked>
+                <label for="toc-chapter-1" class="toc-chapter-label">
+                    <span class="toc-chapter-icon">▼</span>
+                    <span>Chapter 1: Linear Regression</span>
+                </label>
+                <div class="toc-sections">
+                    <a href="chapter-0.html" class="toc-item">Section 1: Simple Linear Regression (Matrix form)</a>
+                    <a href="chapter-1.html" class="toc-item">Section 2: 3 Linear Regression Mle</a>
+                    <a href="chapter-2.html" class="toc-item">Section 3: Calculating bias of $\hat\beta$</a>
+                    <a href="chapter-3.html" class="toc-item">Section 4: Linearity</a>
+                    <a href="chapter-4.html" class="toc-item">Section 5: Normality</a>
+                    <a href="chapter-5.html" class="toc-item">Section 6: Independence and homoskedasticity</a>
+                    <a href="chapter-6.html" class="toc-item">Section 7: Multicollinearity</a>
+                    <a href="chapter-7.html" class="toc-item">Section 8: Strict Exogeneity</a>
+                    <a href="chapter-8.html" class="toc-item">Section 9: Regularization</a>
+                    <a href="chapter-9.html" class="toc-item active">Section 10: Bayesian Regression</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="main-content">
+        <div class="content-pane">
+            <div class="chapter-content">
+                <h1 class="chapter-title">Bayesian Regression</h1>
+                <div class="markdown-cell"><h1>Bayesian Regression</h1></div>
+                <div class="markdown-cell"><p>In <a href="3_Linear_regression_MLE.ipynb">section 3</a>, we estimated the $\beta$ by maximizing the likelihood of the target variable given the data ($P(y|X,\beta)$). This gave us the normal equation which is a point estimate for coefficients of the OLS. But what-if instead of point estimate, we are insterested into the estimating their distribution, i.e. $P(\beta|X,y)$. If we apply Bayes rule to this, we get</p>
+$$
+\overbrace{P(\beta|X,y)}^{\text{posterior}} \propto \overbrace{P(y|X,\beta)}^{\text{likelihood}} \overbrace{\;\;\; P(\beta) \;\;\;}^{\text{prior}}
+$$
+
+<p>From our earlier discussions, we already know that likelihood gives us</p>
+\begin{equation*}
+    P(y|X,\beta) = \Bigg(\frac{1}{(2\pi\sigma^2)^{d/2}}\Bigg)^n \exp \bigg( -\frac{1}{2\sigma^2}\sum^n_{i=1}(y_i - \beta^{T} x_i)^2 \bigg)
+\end{equation*}
+
+<p>And for prior, if we assume that all coefficients are independent and from same Gaussian distribution with zero mean and constant variance</p>
+\begin{equation*}
+    P(\beta) = \Bigg(\frac{1}{\sqrt{2\pi\nu^2}}\Bigg)^d \exp \bigg( -\frac{1}{2\nu^2}\sum^d_{j=1}(\beta_i)^2 \bigg)
+\end{equation*}
+
+<p>Combining both together we get</p>
+\begin{equation*}
+    P(\beta|X,y) = \Bigg(\frac{1}{\sqrt{2\pi\sigma^2}}\Bigg)^n \exp \bigg( -\frac{1}{2\sigma^2}\sum^n_{i=1}(y_i - \beta^{T} x_i)^2 \bigg) \Bigg(\frac{1}{\sqrt{2\pi\nu^2}}\Bigg)^d \exp \bigg( -\frac{1}{2\nu^2}\sum^d_{j=1}(\beta_i)^2 \bigg)
+\end{equation*}
+
+<p>and we need to maximize the posterior</p>
+\begin{align*}
+    \underset{\beta}{max} & \quad P(y|X,\beta) \\
+    \underset{\beta}{max} & \quad \Bigg(\frac{1}{\sqrt{2\pi\sigma^2}}\Bigg)^n \exp \bigg( -\frac{1}{2\sigma^2}\sum^n_{i=1}(y_i - \beta^{T} x_i)^2 \bigg) \Bigg(\frac{1}{\sqrt{2\pi\nu^2}}\Bigg)^d \exp \bigg( -\frac{1}{2\nu^2}\sum^d_{j=1}(\beta_i)^2 \bigg)
+\end{align*}</div>
+                <div class="markdown-cell"><p>Since the variance for coefficients are assumed to be constant and taking all other assumptions from section 3, we can simplify this to</p>
+\begin{equation*}
+    \underset{\beta}{max} \quad \exp \bigg( -\frac{1}{2\sigma^2}\sum^n_{i=1}(y_i - \beta^{T} x_i)^2 -\frac{1}{2\nu^2}\sum^d_{j=1}(\beta_i)^2 \bigg)
+\end{equation*}
+
+<p>Taking log and converting this to minimization we get</p>
+\begin{align*}
+    & \underset{\beta}{min} \quad \frac{1}{2\sigma^2}\sum^n_{i=1}(y_i - \beta^{T} x_i)^2 + \frac{1}{2\nu^2}\sum^d_{j=1}(\beta_i)^2 \\
+    & \underset{\beta}{min} \quad \frac{n}{2\sigma^2}\frac{1}{n}\sum^n_{i=1}(y_i - \beta^{T} x_i)^2 + \lambda \sum^d_{j=1}(\beta_i)^2 \\
+    & \underset{\beta}{min} \quad \frac{1}{n}\sum^n_{i=1}(y_i - \beta^{T} x_i)^2 + \lambda \sum^d_{j=1}(\beta_i)^2 \\
+    & \underset{\beta}{min} \quad MSE(y, \hat{y}) + \lambda \sum^d_{j=1}(\beta_i)^2
+\end{align*}
+
+<p>In matrix form</p>
+$$ \underset{\beta}{min} \quad (y - X\beta)^T(y - X\beta) + \lambda \beta^T\beta $$
+
+<p>If you remember from earlier section, this is same as <strong>Ridge Regression</strong>.</p></div>
+                <div class="markdown-cell"><p>Similarly, instead of Gaussian, if we assume that all coefficients are independent and from same Laplace distribution with zero mean and constant diversity</p>
+\begin{equation*}
+    P(\beta) = \Bigg(\frac{1}{2b}\Bigg)^n \exp \bigg( -\frac{1}{b}\sum^d_{j=1}|\beta_i| \bigg)
+\end{equation*}
+
+<p>we get combined final minimization problem as</p>
+\begin{equation*}
+    \underset{\beta}{min} \quad MSE(y, \hat{y}) + \lambda \sum^d_{j=1}|\beta_i|
+\end{equation*}
+
+<p>If you remember from earlier section, this is same as <strong>LASSO Regression</strong>.</p></div>
+                <div class="markdown-cell"><h2>Multiple possibilities with Bayesian</h2></div>
+                <div class="markdown-cell"><p>Bayesian prior is very powerful idea as this not just lets us restrict the values for the coefficient to a certain distribution, it opens ways for further control and can also let us do further analysis.</p>
+<ul>
+<li><strong>Analysis:</strong> In the first scenario where we assumed coefficients to have constant variance, instead we could have assumed a distribution of this variance and its relationship with the coefficients</li>
+</ul>
+$$
+P(\beta|X,y) \propto P(y|X,\beta)\:P(\beta|\sigma_2)\:P(\sigma^2)
+$$
+
+<p>Using this, we can do more than OLS. Since, we our base parameters are parameters for variance, we can also get model the variance. This can help us compare OLS with Baysesian linear regression on an increasing number of data points. OLS has no notion of uncertainty about its point estimate of $\beta$. Bayesian linear regression does; and being regularized by its prior, it requires more data to become more certain about the inferred $\beta$.</p></div>
+                <div class="markdown-cell"><ul>
+<li><strong>Incorporate domain knowledge in the model:</strong> If we know what kind of relationship exist between independent variables and target variable, we can bring that knowledge while modeling the problem.</li>
+</ul>
+<ol>
+<li>If we know that independent variables can never have an inverse relationship with target variable, it might make more sense to assume a positive distribution for the prior.</li>
+<li>If the relationship is more of count of independent variables, Poisson distribution may be helpful.</li>
+<li>Similarly, if we have lots of outliers and we want to accommodate them may Cauchy is your choice.</li>
+</ol></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>

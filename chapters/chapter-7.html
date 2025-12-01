@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strict Exogeneity</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']]
+            }
+        };
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Table of Contents</h2>
+        </div>
+        <nav class="toc">
+            <div class="toc-chapter">
+                <input type="checkbox" id="toc-chapter-1" class="toc-chapter-toggle" checked>
+                <label for="toc-chapter-1" class="toc-chapter-label">
+                    <span class="toc-chapter-icon">▼</span>
+                    <span>Chapter 1: Linear Regression</span>
+                </label>
+                <div class="toc-sections">
+                    <a href="chapter-0.html" class="toc-item">Section 1: Simple Linear Regression (Matrix form)</a>
+                    <a href="chapter-1.html" class="toc-item">Section 2: 3 Linear Regression Mle</a>
+                    <a href="chapter-2.html" class="toc-item">Section 3: Calculating bias of $\hat\beta$</a>
+                    <a href="chapter-3.html" class="toc-item">Section 4: Linearity</a>
+                    <a href="chapter-4.html" class="toc-item">Section 5: Normality</a>
+                    <a href="chapter-5.html" class="toc-item">Section 6: Independence and homoskedasticity</a>
+                    <a href="chapter-6.html" class="toc-item">Section 7: Multicollinearity</a>
+                    <a href="chapter-7.html" class="toc-item active">Section 8: Strict Exogeneity</a>
+                    <a href="chapter-8.html" class="toc-item">Section 9: Regularization</a>
+                    <a href="chapter-9.html" class="toc-item">Section 10: Bayesian Regression</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="main-content">
+        <div class="content-pane">
+            <div class="chapter-content">
+                <h1 class="chapter-title">Strict Exogeneity</h1>
+                <div class="markdown-cell"><h1>Strict Exogeneity</h1></div>
+                <div class="markdown-cell"><p>This is one of the most important assumptions of OLS which makes the OLS estimate <strong>BLUE</strong>. Strict exogeneity means that each error term is uncorrelated with the entire design matrix <strong>X</strong>.</p>
+$$ \mathbb{E}[\epsilon_n | \text{X}] = 0, \quad n \in \{1,\dots,N\} $$
+
+<p>or</p>
+$$ \mathbb{E}[\mathbb{\epsilon} | \text{X}] = 0 $$
+
+<p>If $ \mathbb{E}[\mathbb{\epsilon} | \text{X}] = 0 $, then</p>
+<ul>
+<li>$ \mathbb{E}[\mathbb{\epsilon}] = 0 $ : The error has no internal structure</li>
+<li>$ \mathbb{E}[\mathbb{\epsilon}\text{X}] = 0 $ : This rules out the possibility that <strong>X</strong> and error are correlated</li>
+<li>$ \mathbb{E}[\mathbb{\epsilon} | \mathcal{f}(\text{X})] = \mathbb{E}[\mathbb{\epsilon}\mathcal{f}(\text{X})] = 0 $ : For some finite valued function $\mathcal{f}$, $\mathcal{f}(\text{X})$ and error are correlated. This is particularly of interest, since with this assumption you may include $\mathcal{f}(\text{X})$, as a regressor and still have OLS providing you unbiased estimates. i.e OLS estimate will unbiased even for models like $y=\beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_1^2 + \beta_4 x_2^2 + \beta_5 x_1x_2$</li>
+<li>$ \mathbb{E}[y | \text{X}] = \text{X}\beta $ : $ \mathbb{E}[y | \text{X}] = \mathbb{E}[\text{X}\beta + \epsilon | \text{X}] = \text{X}\beta + \mathbb{E}[\epsilon | \text{X}] = \text{X}\beta + 0 = \text{X}\beta $</li>
+</ul>
+<p>Because of these, strict exogeneity implies:</p>
+<ul>
+<li>There is no internal structure to the error.</li>
+<li>There is no external structure to the error tied to the predictors.</li>
+<li>OLS estimate will unbiased even for $\mathcal{f}(\text{X})$.</li>
+</ul></div>
+                <div class="markdown-cell"><h2>Why is this assumption broken?</h2>
+<p>The violation of exogeneity is known as <strong>endogeneity</strong> and there are may come situations when the assumption of strict exogeneity is broken. This may happen in cases like</p>
+<h3>Omitted variable bias</h3>
+<p>Suppose the true model is</p>
+$$ y = \beta_1 X + \beta_2 W + \epsilon $$
+
+<p>But we omit <strong>w</strong>, and estimate</p>
+$$ y = \beta_1 X + u $$
+
+<p>Now the error term, $u=\beta_2 W + \epsilon$ will contain <strong>W</strong> and for most of the practical situations <strong>W</strong> will be some what correlated to <strong>X</strong>. That means</p>
+$$ \mathbb{E}[u | \text{X}] \neq 0 $$
+
+<h3>Simultaneity Bias</h3>
+<p>This is when the both independent variable and target variable are simultaneously dependent on each other. There is no directionality of the dependence but we try to model in one direction.</p>
+<p><strong>Example:</strong></p>
+<p>Let say we are trying to model students score in an exam based on the study hours the student put in the preparation. For this the model will be</p>
+$$ \text{score} = \beta_0 + \beta_1 \text{study_hours} + \epsilon $$
+
+<p>We know that there is monotonic relationship between exam score and the study hours. If the student study more hours its more likely to get high score. However, if the student expects the exam to be easy and get high score, the student may study for less hours. Therefore, there is a relationship between exam score and study hours both ways.</p>
+$$ \text{score} \leftrightarrow \text{study_hours} $$
+
+<p>Because of the bi-directional dependence between independence, the error becomes correlated to the design matrix <strong>X</strong>.</p>
+<h3>Reverse Causality</h3>
+<p>This is when we create a model in a reverse relationship. i.e we create a model</p>
+$$ y = \beta_0 + \beta_1 x + \epsilon $$
+
+<p>but in reality, $ x \sim y $ instead of $ y \sim x $ as modeled. Because of this the error becomes correlated to the design matrix <strong>X</strong>.</p></div>
+                <div class="markdown-cell"><h2>Consequence of Endogeneity</h2>
+<p>Let us take a look at what happens when the assumption of strict exogeneity is broken</p>
+<h3>OLS Estimates Become Biased and Inconsistent</h3>
+<p>We have seen in previous sections that the $\hat\beta$ can be represented in terms of $\beta$ as</p>
+$$ \hat\beta = \beta + (\text{X}^T\text{X})^{-1}\text{X}^T\epsilon $$
+
+<p>Taking expectation of both side conditioned on the design matrix, we get</p>
+\begin{align*}
+\mathbb{E}[\hat\beta | \text{X}] &= \mathbb{E}[\beta + (\text{X}^T\text{X})^{-1}\text{X}^T\epsilon | \text{X}] \\
+                      &= \beta +  \mathbb{E}[(\text{X}^T\text{X})^{-1}\text{X}^T\epsilon | \text{X}] \\
+                      &= \beta +  (\text{X}^T\text{X})^{-1}\text{X}^T\mathbb{E}[\epsilon | \text{X}] \\
+\end{align*}
+
+<p>So now if strict exogeneity if broken i.e $\mathbb{E}[\epsilon | \text{X}] \neq 0$ then $\mathbb{E}[\hat\beta | \text{X}] \neq \beta$ and the estimate will be biased.</p>
+<h3>Inference Is Invalid</h3>
+<p>Because the OLS estimator is biased:</p>
+<ul>
+<li>Confidence intervals no longer cover the true $\beta$ with the advertised probability</li>
+<li>p-values are meaningless</li>
+<li>Hypothesis testing becomes unreliable</li>
+</ul>
+<h3>Variance Estimates Are Wrong</h3>
+<p>We have seen in previous section that the variance formula for OLS also assumes exogeneity is give by</p>
+$$ \mathbb{V}[\hat\beta] = \sigma(\text{X}^T\text{X})^{-1} $$
+
+<p>If errors correlate with predictors:</p>
+<ul>
+<li>The residuals are “contaminated” with information about <strong>X</strong></li>
+<li>Standard error formulas become invalid</li>
+<li>This leads to overconfident or misleading conclusions</li>
+</ul></div>
+                <div class="markdown-cell"><h2>How to address Endogeneity?</h2>
+<p>There is no way we completely get rid of endogeneity but we there are ways which can reduce the affects of this violation.</p>
+<h3>Add more relevant variable</h3>
+<p>We have seen earlier that endogeneity may arise due to omitted variables and the simplest way to overcome it is including additional independent variable that can restore the assumption.</p>
+<h3>Choosing correct model</h3>
+<p>The simultaneity bias and the reverse causality can be addressed by carefully and correctly building the model. It may sometimes be difficult to completely avoid these biases but a deeper understanding of the domain, reformulation of the problem and selecting correct directionality of the relationship can be helpful.</p>
+<h3>Instrumental Variables</h3>
+<p>One way to address endogeneity is to use instrument variables. In this approach, the problematic design matrix <strong>X</strong> is replaced with and instrument <strong>Z</strong> which is:<br />
+- Correlated to <strong>X</strong><br />
+- Uncorrelated with the error, $\epsilon$</p>
+<p>This is the idea behind <strong>2SLS (Two Stage Least Squares)</strong></p></div>
+                <div class="markdown-cell"><h2>Two Stage Least Squares (2SLS)</h2>
+<p>You want to estimate:</p>
+$$ y = \beta_0 + \beta_1\text{X} + \epsilon $$
+
+<p>but <strong>X</strong> is endogenous i.e. $\text{Cov}(\text{X}, \epsilon) \neq 0$</p>
+<p>So we introduce an instrument <strong>Z</strong> such that</p>
+<ul>
+<li>$\text{Cov}(\text{Z}, \text{X}) \neq 0$ : relevance</li>
+<li>$\text{Cov}(\text{Z}, \epsilon) = 0$ : exogeneity</li>
+</ul>
+<p>In 2SLS, we do not directly use our design matrix <strong>X</strong> for predicting the target variable. Instead the model is built in two stages.</p>
+<p><strong>Stage 1</strong>: Regress endogenous variable <strong>X</strong> on instrument(s) <strong>Z</strong></p>
+$$ \text{X} = \pi_0 + \pi_1\text{Z} + u $$
+
+<p>We get predicted values:</p>
+$$ \hat{\text{X}} = \pi_0 + \pi_1\text{Z} $$
+
+<p>This $\hat{\text{X}}$ cleaned of endogeneity, since they come from <strong>Z</strong>, which is exogenous.</p>
+<p><strong>Stage 2</strong>: Regress <strong>y</strong> on $\hat{\text{X}}$</p>
+$$ \text{y} = \beta_0 + \beta_1\hat{\text{X}} + v $$
+
+<p>Here’s the key, The error term $v$ in this stage is not the same as the original structural error $\epsilon$, but it still exists.</p>
+<p>Even though $\hat{\text{X}}$ is uncorrelated with $\epsilon$, it cannot explain all variation in <strong>y</strong> because there are still other unobserved factors in <strong>y</strong>. So even after using $\hat{\text{X}}$, the second-stage regression has a residual that includes whatever is left of $\epsilon$ plus any approximation error. But this residual is now uncorrelated with $\hat{\text{X}}$ because $\hat{\text{X}}$ comes from <strong>Z</strong> which is orthogonal to $\epsilon$.</p>
+<p>In matrix form, the normal equation will be</p>
+$$ \hat{\beta}_{\text{2SLS}} = (\text{X}^TP_z\text{X})^{-1}\text{X}^TP_zy $$
+
+<p>where, </p>
+<ul>
+<li>$P_z = \text{Z}(\text{Z}^T\text{Z})^{-1}\text{Z}^T$ is the projection matrix onto the column space of $\text{Z}$</li>
+<li>This projects both $\text{X}$ and $y$ onto the space spanned by the instruments</li>
+</ul>
+<h3>Caveats</h3>
+<p>Although, two stage least square can relax exogeneity assumption in OLS, the 2SLS estimator is not <strong>BLUE</strong></p>
+<ul>
+<li><strong>Is it unbiased?</strong></li>
+</ul>
+<p>Taking expectation of the 2SLS estimate</p>
+\begin{align*}
+    \mathbb{E}[\hat{\beta}_{\text{2SLS}}|\text{X}] &= \mathbb{E}[(\text{X}^TP_z\text{X})^{-1}\text{X}^TP_zy|\text{X}] \\
+                                          &= \mathbb{E}[(\text{X}^TP_z\text{X})^{-1}\text{X}^TP_z(\text{X}\beta + \epsilon)|\text{X}] \\
+                                          &= \mathbb{E}[(\text{X}^TP_z\text{X})^{-1}(\text{X}^TP_z\text{X})\beta + (\text{X}^TP_z\text{X})^{-1}\text{X}^TP_z\epsilon|\text{X}] \\
+                                          &= \beta + \mathbb{E}[(\text{X}^TP_z\text{X})^{-1}\text{X}^TP_z\epsilon|\text{X}] \\
+                                          &= \beta + \mathbb{E}[(\text{X}^T\text{Z}(\text{Z}^T\text{Z})^{-1}\text{Z}^T\text{X})^{-1}\text{X}^T\text{Z}(\text{Z}^T\text{Z})^{-1}\text{Z}^T\epsilon|\text{X}] \\
+\end{align*}
+
+<p>Even though $\mathbb{E}[\text{Z}^T\epsilon] = 0$ (Z and $\epsilon$ are uncorrelated), because of the randomness involved in the second term, it cannot be zero. Hence, $\hat{\beta}_{\text{2SLS}}$ is not unbiased.</p>
+<p>However, $\hat{\beta}_{\text{2SLS}}$ is <strong>consistent</strong> (convergence in probability)</p>
+$$ \hat{\beta}_{\text{2SLS}} \overset{P}{\to} \beta $$
+
+<ul>
+<li><strong>Minimum variance?</strong></li>
+</ul>
+<p>The 2SLS estimator generally has higher variance than OLS</p></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>

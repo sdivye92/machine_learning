@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multicollinearity</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']]
+            }
+        };
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Table of Contents</h2>
+        </div>
+        <nav class="toc">
+            <div class="toc-chapter">
+                <input type="checkbox" id="toc-chapter-1" class="toc-chapter-toggle" checked>
+                <label for="toc-chapter-1" class="toc-chapter-label">
+                    <span class="toc-chapter-icon">▼</span>
+                    <span>Chapter 1: Linear Regression</span>
+                </label>
+                <div class="toc-sections">
+                    <a href="chapter-0.html" class="toc-item">Section 1: Simple Linear Regression (Matrix form)</a>
+                    <a href="chapter-1.html" class="toc-item">Section 2: 3 Linear Regression Mle</a>
+                    <a href="chapter-2.html" class="toc-item">Section 3: Calculating bias of $\hat\beta$</a>
+                    <a href="chapter-3.html" class="toc-item">Section 4: Linearity</a>
+                    <a href="chapter-4.html" class="toc-item">Section 5: Normality</a>
+                    <a href="chapter-5.html" class="toc-item">Section 6: Independence and homoskedasticity</a>
+                    <a href="chapter-6.html" class="toc-item active">Section 7: Multicollinearity</a>
+                    <a href="chapter-7.html" class="toc-item">Section 8: Strict Exogeneity</a>
+                    <a href="chapter-8.html" class="toc-item">Section 9: Regularization</a>
+                    <a href="chapter-9.html" class="toc-item">Section 10: Bayesian Regression</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="main-content">
+        <div class="content-pane">
+            <div class="chapter-content">
+                <h1 class="chapter-title">Multicollinearity</h1>
+                <div class="markdown-cell"><h1>Multicollinearity</h1></div>
+                <div class="markdown-cell"><p>In section 3, we derive the normal equation for OLS linear regression and the estimate for $\beta$ was:</p>
+$$ \hat\beta = (\text{X}^T\text{X})^{-1}\text{X}^Ty $$
+
+<p>where, y is a n-dimensional vector of target variables and <strong>X</strong> is the $n \times p$ dimensional design matrix.</p>
+<p>Note that estimating $\hat\beta$ depends on the Gram matrix $\text{X}^T\text{X}$ being invertible. Furthermore, the variance of this estimator</p>
+$$ \mathbb{V}[\hat\beta | \text{X}] = \sigma^2(\text{X}^T\text{X})^{-1} $$
+
+<p>also depends on the Gram matrix being invertible.</p>
+<p>The Gram matrix is invertible if and only if <strong>X</strong> is full rank, and <strong>X</strong> is full rank when none of its <em>p</em> columns can be represented as linear combinations of any other columns. That means, all <em>p</em> independent variables are linearly independent and $n \ge p$.</p>
+<p>When independent variables are linearly dependent, we call it perfect multicollinearity.</p>
+$$ x_i = \alpha_0 + \sum_{j \neq i} \alpha_j x_j \quad j \in [1 \dots p] $$
+
+<p>Although in practice, we rarely get to see perfect multicollinearity and when we use the word multicollinearity, we usually mean severe imperfect multicollinearity.</p>
+$$ x_i = \alpha_0 + \sum_{j \neq i} \alpha_j x_j + u \quad j \in [1 \dots p] $$</div>
+                <div class="markdown-cell"><h2>Consequence of multicollinearity</h2></div>
+                <div class="markdown-cell"><p><strong>Perfect multicollinearity</strong></p>
+<p>If there were perfect multicollinearity, the OLS estimator $\hat\beta$ will no longer remain <strong>BLUE</strong> and Gram matrix will become non-invertible causing calculation of $\hat\beta$ difficult.</p>
+<p><strong>Imperfect multicollinearity</strong></p>
+<p>However, perfect multicollinearity is rarely evident on real situation and imperfect multicollinearity does not break the assumption of OLS. Therefore, Gauss Markov Theorem tells us that the OLS estimator is still <strong>BLUE</strong>.</p>
+<p>Although, imperfect multicollinearity does not prediction by large, it does have consequences.</p></div>
+                <div class="markdown-cell"><h3>Difficult to interpret</h3>
+<p>Since multicollinear predictors can be predictive of the same response, the model becomes difficult to interpret. It makes it difficult to disambiguate between the effect of two or more multicollinear predictors.</p>
+<p>Take an example a simple linear model with two independent variables</p>
+$$ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \epsilon $$
+
+<p>In this, if $x_1 = kx_2$</p>
+$$
+y = \beta_0 + \beta_1 (kx_2) + \beta_2 x_2 + \epsilon \\
+y = \beta_0 + (\beta_1 k + \beta_2)x_2 + \epsilon
+$$
+
+<p>Here, for any choice of $\beta_1$ there is an infinite number of choices for $\beta_2$ from the equation $\beta' = (\beta_1 k + \beta_2)$. Because of this, it becomes difficult to properly interpret $\beta_1$ and $\beta_2$ and they can take any value. This can cause increase in the variance of $\hat\beta$ leading to lower t-statistic which will make it harder to reject the null hypothesis.</p>
+<p>Let us understand this with a numeric example. Consider we have a data with 4 independent variables ($x_1, x_2, x_3, x_4$) out of which $x_1$ and $x_3$ are collinear. For this, we make three models: with all independent variables, with just $x_1$ and with just $x_3$ and we get these results:<br />
+- <strong>with all independent variables</strong><br />
+  - $R^2$ = 0.992<br />
+  - coefficients for predictors:<br />
+    - $\beta_1$ = 1.64<br />
+    - $\beta_2$ = 0.79<br />
+    - $\beta_3$ = 3.83<br />
+    - $\beta_4$ = 0.21</p>
+<ul>
+<li><strong>with just $x_1$</strong></li>
+<li>$R^2$ = 0.926</li>
+<li>
+<p>coefficients for predictors:</p>
+<ul>
+<li>$\beta_1$ = 2.05</li>
+</ul>
+</li>
+<li>
+<p><strong>with just $x_3$</strong></p>
+</li>
+<li>$R^2$ = 0.761</li>
+<li>coefficients for predictors:<ul>
+<li>$\beta_3$ = 11.96</li>
+</ul>
+</li>
+</ul>
+<p>Now if look at the results for the model with all independent variables, we might say that $x_3$ is important. However, when we look at models with just $x_1$ and just $x_3$, the situation changes. We find that $x_1$ has more predictive power as it gives significantly higher $R^2$ when compared to $x_3$. So when both of these independent variables are included in the model, multicollinearity complicates the analysis.</p></div>
+                <div class="markdown-cell"><h3>Unstable parameter estimates</h3>
+<p>The second problem of multicollinearity is that estimation of $\hat\beta$ becomes unstable. But first, let us quantify multicollinearity. For this we will use <strong>condition index</strong> and <strong>condition number</strong>. The condition index number of a matrix <strong>A</strong> is the ratio of its maximum and each singular value (or eigenvalue if <strong>A</strong> is normal) and the largest condition index is called the condition number ($\mathcal{K}(A))$ i.e the ratio of largest singular value to the smallest.</p>
+$$ \mathcal{K}(A) = \frac{\sigma_{max}(A)}{\sigma_{min}(A)} $$
+
+<p>As the smallest singular value $\sigma_{min}(A)$ becomes close to zero, the condition number of A grows to be very big.</p>
+<p>The condition number measure how <strong><em>well-conditioned</em></strong> is the problem. A <strong>well-conditioned</strong> problem one where a small change in the input <em>x</em> results in a small change in the output <em>f(x)</em>. An <strong>ill-conditioned</strong> problem is a problem in which a small change in the input <em>x</em> results in a large change in the output <em>f(x)</em>. In terms of regression, an ill-conditioned problem is one where, for a small change in independent variables there is a large change in the answer or dependent variable. For a well-conditioned problem, the condition number is low and a high condition number is indicative of an ill-conditioned problem.</p>
+<p>But what is the intuition behind this?</p>
+<p>Let us consider a single value decomposition of matrix <strong>A</strong></p>
+$$ A = USV^T $$
+
+<p>where <strong>U</strong> and <strong>V</strong> are orthogonal matrices and <strong>S</strong> is a diagonal matrix of singular values</p>
+$$
+S = \begin{bmatrix}
+    \sigma_1(A) & 0 & \cdots & 0 \\
+    0 & \sigma_2(A) & \cdots & 0 \\
+    \vdots & \vdots & \ddots & \vdots \\
+    0 & 0 & \cdots & \sigma_p(A) \\
+    \end{bmatrix}
+$$
+
+<p>Then the A in terms of SVD can be written as</p>
+$$ A^{-1} = VS^{-1}U^{T} $$
+
+<p>and since <strong>S</strong> is a diagonal matrix, its inverse is the inverse of its diagonal elements</p>
+$$
+S = \begin{bmatrix}
+    \frac{1}{\sigma_1(A)} & 0 & \cdots & 0 \\
+    0 & \frac{1}{\sigma_2(A)} & \cdots & 0 \\
+    \vdots & \vdots & \ddots & \vdots \\
+    0 & 0 & \cdots & \frac{1}{\sigma_p(A)} \\
+    \end{bmatrix}
+$$
+
+<p>In this, if any of the singular value for the matrix <strong>A</strong> is zero, the inverse does not exist. Even when, the singular value is close, because of $\frac{1}{\sigma_p(A)}$, a small change in singular value, can cause a big change in the inverse. This make the algorithm sensitive to $\sigma_p(A)$. Also, at such small values, inverse may also becomes numerically unstable because if floating point arithmetic errors.</p>
+<p>For more details on condition number and stability, refer to Part III Lectures 12-14 of <em>Numerical linear algebra</em> (vol 50) by Trefethen, L. N., &amp; Bau III, D. How this relates to OLS, check Lecture 18 and 19. If you are interested, take a look at its exercise problem 18.2.</p></div>
+                <div class="markdown-cell"><p><strong>But how does this relate to OLS?</strong></p>
+<p>In OLS, the estimate of $\beta$ is calculated as</p>
+$$ \hat\beta = (\text{X}^T\text{X})^{-1}\text{X}^Ty $$
+
+<p>The singular value decomposition for our design matrix <strong>X</strong> will be</p>
+$$ \text{X} = USV^T $$
+
+<p>and the normal equation for $\hat\beta$ depends on $(\text{X}^T\text{X})^{-1}$ which using the SVD for <strong>X</strong> will be</p>
+\begin{align*}
+\text{X}^T\text{X} &= (USV^T)^T(USV^T) & \\
+                   &= (VS^TU^T)(USV^T) & \\
+                   &= (VSU^T)(USV^T) & \because S \text{ is diagonal so } S^T = S \\
+                   &= VSU^TUSV^T & \\
+                   &= VSISV^T & \because U \text{ is orthogonal so } U^T = U^{-1} \\
+                   &= VS^2V^T & \because S \text{ is diagonal so } SS = S^2 \\
+\end{align*}
+
+<p>On substituting this in the normal equation, we get</p>
+\begin{align*}
+\hat\beta &= (\text{X}^T\text{X})^{-1}\text{X}^Ty & \\
+          &= (VS^2V^T)^{-1}(USV^T)^Ty & \\
+          &= ((V^T)^{-1}S^{-2}V^{-1})(USV^T)^Ty & \\
+          &= (VS^{-2}V^T)(VSU^T)y & \because V \text{ is orthogonal and } V^TV = I \text{ so } V^T = V^{-1} \text{ and } (V^T)^{-1} = V \\
+          &= (VS^{-2}V^TVSU^Ty & \\
+          &= VS^{-2}SU^Ty & \\
+          &= VS^{-1}U^Ty & \\
+\end{align*}
+
+<p>Also, as $\text{X}^T\text{X}$ is a real symmetric matrix, its eigen decomposition will be</p>
+$$ \text{X}^T\text{X} = Q\Lambda Q^T $$
+
+<p>where <strong>Q</strong> is a matrix of eigenvectors and $\Lambda$ is a diagonal matrix of eigenvalues. On comparing this with what we got from SVD above, we get $V = Q$ and $S^2 = \Lambda$.</p>
+<p>Based on this, we can say that the normal equation depends on the square root of inverse of eigenvalues of $\text{X}^T\text{X}$. And for and ill-conditioned problem/matrix, the smaller eigenvalues will be very small (almost close to zero).</p>
+<p>This is why Python libraries such statsmodels will warn us about eigenvalues (square of the singular values) if we fit OLS to data with multicollinearity.</p></div>
+                <div class="markdown-cell"><h2>Detection of multicollinearity</h2></div>
+                <div class="markdown-cell"><p>Now that we know the effects of multicollinearity on our regression analyses, how can we tell if multicollinearity exists in our data?</p>
+<p>Some of the common sign during analysis that are indicative of presence of multicollinearity:<br />
+- The estimates of the coefficients vary excessively from model to model.<br />
+- High $R^2$ with low t-statistic.<br />
+- The t-tests for each of the individual slopes are non-significant (P &gt; 0.05), but the overall F-test for testing all of the slopes are simultaneously 0 is significant (P &lt; 0.05).</p>
+<p>We can also look at pairwise correlation of our independent variables. A large correlations among pairs may indicate multicollinearity. Although, correlation can be helpful, it is limiting. If an independent variable is dependent on multiple other independent variables ($x_3 = \alpha_1 x_1 + \alpha_2 x_2 + error$), correlation may not high. Therefore, it is better to use other methods to detect multicollinearity.</p></div>
+                <div class="markdown-cell"><h3>Variance Inflation Factor (VIF)</h3>
+<p>If an independent variable is linearly dependent on multiple other independent variables, it will look like</p>
+$$ x_i = \alpha_0 + \sum_{j \neq i} \alpha_j x_j + \epsilon \quad j \in [1 \dots p] $$
+
+<p>This is same as having a linear model of $x_i$ using $x_j$.</p>
+<p>What we can do is, we can build a linear models for each of the independent variable in our data using remaining independent variable and calculate $R^2$ for each of these models. As we know that, variances of the estimated coefficients are inflated when multicollinearity exists. We can quantifies how much the variance is inflated by using VIF. The VIF for $\beta_i$, denoted $\text{VIF}_i$, is a factor by which the variance of $\beta_j$ is "inflated" due to the existence of correlation among the predictor variables in the model.</p>
+$$ \text{VIF}_i = \frac{1}{1 - R^2_i} $$
+
+<p>Considering the range of $R^2$ ($0 \le R^2 \le 1$), $R^2_i$ = 0 (complete absence of multicollinearity) minimizes the variance of $\hat\beta_i$, while $R^2_i$ = 1 (exact multicollinearity) makes this variance infinite.</p>
+<p>Although the VIF helps in determining the presence of multicollinearity, it cannot detect the explanatory variables causing the multicollinearity. To put it simply, if for an independent variable $x_1$, VIF is high, this tells you $x_1$ is suffering from multicollinearity. But it does not tell you which other independent variables $x_1$ is related to.</p></div>
+                <div class="markdown-cell"><h3>Condition Number</h3>
+<p>We have already seen above how we can use condition number to identify if multicollinearity is present or not by checking whether the coefficient estimation is well-conditioned or ill-conditioned.</p></div>
+                <div class="markdown-cell"><h3>Variance Decomposition Proportion (VDP)</h3>
+<p>The multicollinearity detection methods we have seen tell us that multicollinearity exist and which independent variable is suffering from it. However, it would be nice if we can find which independent variables are collinear. We know that multicollinearity inflates the variance of regression coefficients and Variance Decomposition Proportion (VDP) tells us how much each eigenvalue contributes to the variance of each regression coefficient. Each explanatory variable has variance decomposition proportions corresponding to each condition index. If two or more variance decomposition proportions corresponding to high condition index exceed 80% to 90%, it is determined that multicollinearity is present between the independent variables corresponding to the exceeding variance decomposition proportions.</p>
+<p>Let us understand this with an step-by-step example.</p>
+<p>Suppose we have three explanatory variables: $x_1$, $x_2$ and $x_3$ and they have a correlation matrix <strong>R</strong> (standardized variables).</p>
+<p><strong>Correlation Matrix (R):</strong></p>
+$$
+R = \begin{bmatrix}
+1.0 & 0.9 & 0.7 \\
+0.9 & 1.0 & 0.6 \\
+0.7 & 0.6 & 1.0
+\end{bmatrix}
+$$
+
+<p><strong>Eigenvalues:</strong><br />
+- $\lambda_1 = 2.4741$<br />
+- $\lambda_2 = 0.0888$<br />
+- $\lambda_3 = 0.4372$</p>
+<p><strong>Eigenvectors (columns correspond to eigenvalues):</strong></p>
+$$
+V = \begin{bmatrix}
+0.6108 & 0.7523 & -0.2468 \\
+0.5885 & -0.6400 & -0.4941 \\
+0.5296 & -0.1565 & 0.8337
+\end{bmatrix}
+$$
+
+<p><strong>Condition Indices:</strong><br />
+- Condition Index 1: $1.0000$<br />
+- Condition Index 2: $5.2796$<br />
+- Condition Index 3: $2.3789$</p>
+<p><strong>Step-by-Step Variance Decomposition Proportions (VDPs):</strong></p>
+<p><strong>Variable X1:</strong><br />
+- Numerator for $\lambda_1 = \frac{(0.6108)^2}{2.4741} = 0.1508$<br />
+- Numerator for $\lambda_2 = \frac{(0.7523)^2}{0.0888} = 6.3765$<br />
+- Numerator for $\lambda_3 = \frac{(-0.2468)^2}{0.4372} = 0.1393$<br />
+- Denominator: $6.6667$<br />
+- VDP at Condition Index 1: $\frac{0.1508}{6.6667} = 0.0226$<br />
+- VDP at Condition Index 2: $\frac{6.3765}{6.6667} = 0.9565$<br />
+- VDP at Condition Index 3: $\frac{0.1393}{6.6667} = 0.0209$<br />
+- Sum of VDPs: $1.0000$</p>
+<p><strong>Variable X2:</strong><br />
+- Numerator for $\lambda_1 = \frac{(0.5885)^2}{2.4741} = 0.1400$<br />
+- Numerator for $\lambda_2 = \frac{(-0.6400)^2}{0.0888} = 4.6142$<br />
+- Numerator for $\lambda_3 = \frac{(-0.4941)^2}{0.4372} = 0.5583$<br />
+- Denominator: $5.3125$<br />
+- VDP at Condition Index 1: $\frac{0.1400}{5.3125} = 0.0264$<br />
+- VDP at Condition Index 2: $\frac{4.6142}{5.3125} = 0.8685$<br />
+- VDP at Condition Index 3: $\frac{0.5583}{5.3125} = 0.1051$<br />
+- Sum of VDPs: $1.0000$</p>
+<p><strong>Variable X3:</strong><br />
+- Numerator for $\lambda_1 = \frac{(0.5296)^2}{2.4741} = 0.1134$<br />
+- Numerator for $\lambda_2 = \frac{(-0.1565)^2}{0.0888} = 0.2761$<br />
+- Numerator for $\lambda_3 = \frac{(0.8337)^2}{0.4372} = 1.5897$<br />
+- Denominator: $1.9792$<br />
+- VDP at Condition Index 1: $\frac{0.1134}{1.9792} = 0.0573$<br />
+- VDP at Condition Index 2: $\frac{0.2761}{1.9792} = 0.1395$<br />
+- VDP at Condition Index 3: $\frac{1.5897}{1.9792} = 0.8032$<br />
+- Sum of VDPs: $1.0000$</p>
+<p><strong>Final Variance Decomposition Proportions Table:</strong></p>
+$$
+\begin{array}{c|ccc}
+\text{Condition Index} & x_1 & x_2 & x_3 \\
+\hline
+1 & 0.0226 & 0.0264 & 0.0573 \\
+2 & 0.9565 & 0.8685 & 0.1395 \\
+3 & 0.0209 & 0.1051 & 0.8032 \\
+\end{array}
+$$
+
+<p>Condition Index 2 has high VDPs for $x_1$ and $x_2$ (95.6% and 86.8%). This suggests $x_1$ and $x_2$ are collinear and responsible for most of the multicollinearity at this structure.</p></div>
+                <div class="markdown-cell"><p>For more details on multicollinearity check out <em><a href="https://ekja.org/upload/pdf/kja-19087.pdf">Multicollinearity and misleading statistical results</a></em> by Jong Hae Kim</p></div>
+                <div class="markdown-cell"><h2>Treatment of Multicollinearity</h2></div>
+                <div class="markdown-cell"><p>Now that we understand what multicollinearity is and how to detect it, the next question is: how can we address it? There are few way we can address this problem:</p>
+<h3>Dropping Predictors</h3>
+<p>A straightforward idea might be to simply drop one of the predictors if it is highly correlated with another. However, this is not always the best solution. As we have discussed, multicollinearity can exist even when no single pair of predictors shows a very high correlation. In addition, we generally prefer to retain as much data as possible rather than discard valuable information.</p>
+<h3>Dimension Reduction Techniques</h3>
+<p>A more effective strategy is to use dimension reduction methods that transform the predictor space into a lower-dimensional representation:<br />
+- <strong>Principal Component Regression (PCR):</strong> This method uses principal components derived from the predictors as new inputs to the regression model. These components are uncorrelated by design, which directly addresses multicollinearity.<br />
+- <strong>Partial Least Squares (PLS) Regression:</strong> Similar to PCR, PLS finds components that capture variance in both the predictors and the response, potentially leading to better predictive performance.</p>
+<h3>Ridge Regression (L2 Regularization)</h3>
+<p>Another powerful approach is ridge regression, which mitigates multicollinearity by introducing an $\mathcal{l}_2$-norm penalty (also called Tikhonov regularization) to the regression coefficients. The ridge regression solution is given by:</p>
+$$ \hat\beta_{ridge} = (\alpha \mathit{I} + \text{X}^T\text{X})^{-1}\text{X}^Ty $$
+
+<p>where $\alpha \gt 0$ is a regularization hyperparameter.</p>
+<p>Adding $\alpha$ to the diagonal elements of the covariance matrix ensures that the matrix remains full rank and invertible, even in cases where the number of predictors exceeds the number of observations (p &gt; n). This makes ridge regression particularly useful when dealing with multicollinearity or in low-sample-size scenarios.</p></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>

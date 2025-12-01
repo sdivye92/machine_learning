@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Normality</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']]
+            }
+        };
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Table of Contents</h2>
+        </div>
+        <nav class="toc">
+            <div class="toc-chapter">
+                <input type="checkbox" id="toc-chapter-1" class="toc-chapter-toggle" checked>
+                <label for="toc-chapter-1" class="toc-chapter-label">
+                    <span class="toc-chapter-icon">▼</span>
+                    <span>Chapter 1: Linear Regression</span>
+                </label>
+                <div class="toc-sections">
+                    <a href="chapter-0.html" class="toc-item">Section 1: Simple Linear Regression (Matrix form)</a>
+                    <a href="chapter-1.html" class="toc-item">Section 2: 3 Linear Regression Mle</a>
+                    <a href="chapter-2.html" class="toc-item">Section 3: Calculating bias of $\hat\beta$</a>
+                    <a href="chapter-3.html" class="toc-item">Section 4: Linearity</a>
+                    <a href="chapter-4.html" class="toc-item active">Section 5: Normality</a>
+                    <a href="chapter-5.html" class="toc-item">Section 6: Independence and homoskedasticity</a>
+                    <a href="chapter-6.html" class="toc-item">Section 7: Multicollinearity</a>
+                    <a href="chapter-7.html" class="toc-item">Section 8: Strict Exogeneity</a>
+                    <a href="chapter-8.html" class="toc-item">Section 9: Regularization</a>
+                    <a href="chapter-9.html" class="toc-item">Section 10: Bayesian Regression</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="main-content">
+        <div class="content-pane">
+            <div class="chapter-content">
+                <h1 class="chapter-title">Normality</h1>
+                <div class="markdown-cell"><h1>Normality</h1></div>
+                <div class="markdown-cell"><p>The normality assumption in linear regression refers to the assumption that the target variable is normally distributed for the model of form:</p>
+$$ y = \beta_0 + \beta_1 x_1 + \dots + \beta_n x_n $$
+
+<p>As seen in <a href="3_Linear_regression_MLE.ipynb">section 3</a>, this when passed through maximum likelihood estimation (MLE) for $\hat\beta$, we get sum of squared residuals as the cost function which needs to be minimized:</p>
+$$ \mathcal{S}(\beta) = \frac{1}{n}\sum_{i=1}^n(y-\hat{y})^2 = \text{MSE} $$
+
+<p>But what-if our target variable is not normally distributed? Benefit is that we can <strong>change the assumption on target variable distribution</strong> and continue with the MLE to get a estimate for $\beta$.</p></div>
+                <div class="markdown-cell"><h2>Breaking the assumption</h2>
+<p>Lets say, that the data we have in that the target variable instead of being a continuous variable is discrete variable which takes only two values either 0 or 1 (i.e $y \in [0,1]$). This is very common in classification problems where the target variable a class label to which that data point belongs. In this case, the target variable will have binomial distribution:</p>
+$$ y \sim Bernoulli(p) $$
+
+<p>which means:</p>
+\begin{align*}
+    y =
+    \left\{
+    \begin{array}{ll}
+      1,&  p \\
+      0,&  1-p
+    \end{array}
+    \right.
+\end{align*}
+
+<p>Let us create a linear model for this estimating the probability of target variable taking a value of 1. This can we defined as</p>
+$$
+p = \beta_0 + \beta_1 x_1 + \dots + \beta_n x_n
+$$
+
+<p>But there is an issue, LHS is a probability which has a range [0,1] whereas RHS has range [$-\infty, +\infty$]. This is a miss match.</p>
+<p>What-if instead of modeling probability we model odds ratio i.e. $\frac{p}{1-p}$. This is now unbound on the upper end but still has a lower bound of zero. This ratio has a value of 1 in the middle, indicating a probability of .5 for both occurrence and non occurrence. A small range of odds, from 0 to 1, have a higher probability of failure than for success. Then there is an infinite range of odds, from 1 to infinity, which shows higher probability of success than of failure.</p>
+<p>Due to the unbalanced ranges and to centralize the odds ratio around 0, we need to take a logarithmic transformation of the odds ratio. This helps the ranges of the odds ratio to become symmetric around 0, i.e., go from -infinity to +infinity.</p>
+<p>So, now we have a model:</p>
+$$
+\log\Big(\frac{p}{1-p}\Big) = \beta_0 + \beta_1 x_1 + \dots + \beta_n x_n = \beta x
+$$
+
+<p>From this we can find a model for probability of y=1</p>
+\begin{align*}
+\log\Big(\frac{p}{1-p}\Big) &= \beta x & \\
+\frac{p}{1-p} &= e^{\beta x} & \text{taking exponential on both side} \\
+p &= (1-p)e^{\beta x} & \\
+p &= e^{\beta x} - pe^{\beta x} & \\
+p + pe^{\beta x} &= e^{\beta x} & \\
+p(1 + e^{\beta x}) &= e^{\beta x} & \\
+p &= \frac{e^{\beta x}}{(1 + e^{\beta x})} & \\
+p &= \frac{1}{(\frac{1}{e^{\beta x}} + \frac{e^{\beta x}}{e^{\beta x}})} & \\
+p &= \frac{1}{(\frac{1}{e^{\beta x}} + 1)} & \\
+p &= \frac{1}{(e^{-\beta x} + 1)} & \\
+p &= \frac{1}{(1 + e^{-\beta x})} & \\
+\end{align*}
+
+<p>That is we get probability of y=1:</p>
+$$
+P(y=1) = \frac{1}{(1 + e^{-\beta x})}
+$$</div>
+                <div class="markdown-cell"><p>Lets say we have n observed points in our data and if we assume that <strong>each point is independent and identically distributed (iid)</strong>, we can write the likelihood function with respect to all of our observed points as the product of each individual probability density.</p>
+<p>For the data point which have target variable value of 1</p>
+$$ \mathcal{L}_x(p) = \prod_{y=1} p $$
+
+<p>For the data point which have target variable value of 0</p>
+$$ \mathcal{L}_x(p) = \prod_{y=0} (1-p) $$
+
+<p>Combining both of these two we will get</p>
+$$ \mathcal{L}_x(p) = \prod^n_{i=1} p^y(1-p)^{(1-y)} $$
+
+<p>The aim to find the parameters of the model that maximize this likelihood.</p>
+<p>However, maximizing likelihood function may be complex, therefore, we take a log of both side and convert it to log likelihood</p>
+\begin{align*}
+\mathcal{l}_x(p) &= \sum^n_{i=1} \log(p^y(1-p)^{(1-y)}) \\
+                 &= \sum^n_{i=1} \log(p^y) + \log((1-p)^{(1-y)}) \\
+                 &= \sum^n_{i=1} y\log{p} + (1-y)\log{(1-p)}
+\end{align*}
+
+<p>Maximizing the log likelihood is same as minimizing the negative log-likelihood. Therefore, the goal becomes:</p>
+$$
+min \quad -\mathcal{l}_x(p) \\
+min \quad -\sum^n_{i=1} y\log{p} + (1-y)\log{(1-p)}
+$$
+
+<p>In case of our example, we have already found the value of P(y=1). Let us substitute it in the negative log-likelihood equation:</p>
+\begin{align*}
+-\mathcal{l}_x(p) &= - \sum^n_{i=1} y_i\log\Big(\frac{1}{(1 + e^{-\beta x_i})}\Big) + (1-y_i)\log{\Big(1 - \frac{1}{(1 + e^{-\beta x_i})}\Big)} \\
+                  &= - \sum^n_{i=1} y_i\log 1 - y_i\log{(1 + e^{-\beta x_i})} + (1-y_i)\log{\Big(\frac{1 + e^{-\beta x_i} - 1}{(1 + e^{-\beta x_i})}\Big)} \\
+                  &= - \sum^n_{i=1} \log 1^{y_i} - y_i\log{(1 + e^{-\beta x_i})} + (1-y_i)\log{\Big(\frac{e^{-\beta x_i}}{(1 + e^{-\beta x_i})}\Big)} \\
+                  &= - \sum^n_{i=1} \log 1 - y_i\log{(1 + e^{-\beta x_i})} + (1-y_i)\log(e^{-\beta x_i}) - (1-y_i)\log{(1 + e^{-\beta x_i})} \\
+                  &= \sum^n_{i=1} \log 1 - y_i\log{(1 + e^{-\beta x_i})} - (1-y_i)\beta x_i - (1-y_i)\log{(1 + e^{-\beta x_i})} \\
+                  &= - \sum^n_{i=1} \log 1 - y_i\log{(1 + e^{-\beta x_i})} - \beta x_i + y_i\beta x_i - \log{(1 + e^{-\beta x_i})} + y_i\log{(1 + e^{-\beta x_i})} \\
+                  &= - \sum^n_{i=1} \log 1 - \beta x_i + y_i\beta x_i - \log{(1 + e^{-\beta x_i})} \\
+                  &= - \sum^n_{i=1} \log 1 - \log(e^{\beta x_i}) + y_i\beta x_i - \log{(1 + e^{-\beta x_i})} \\
+                  &= - \sum^n_{i=1} \log 1 + y_i\beta x_i - [\log(e^{\beta x_i}) + \log{(1 + e^{-\beta x_i})}] \\
+                  &= - \sum^n_{i=1} \log 1 + y_i\beta x_i - \log(e^{\beta x_i}(1 + e^{-\beta x_i})) \\
+                  &= - \sum^n_{i=1} \log 1 + y_i\beta x_i - \log(e^{\beta x_i} + e^{\beta x_i}e^{-\beta x_i}) \\
+                  &= - \sum^n_{i=1} \log 1 + y_i\beta x_i - \log(1 + e^{\beta x_i}) \\
+                  &= - \sum^n_{i=1} y_i\beta x_i + [\log 1 - \log(e^{\beta x_i} + 1)] \\
+                  &= - \sum^n_{i=1} y_i\beta x_i + \log\Big(\frac{1}{1 + e^{\beta x_i}}\Big) \\
+                  &= \sum^n_{i=1} -y_i\beta x_i - \log\Big(\frac{1}{1 + e^{\beta x_i}}\Big) \\
+                  &= \sum^n_{i=1} -y_i\beta x_i + \log\Big(\frac{1}{1 + e^{\beta x_i}}\Big)^{-1} \\
+                  &= \sum^n_{i=1} \log(1 + e^{\beta x_i}) - y_i\beta x_i
+\end{align*}</div>
+                <div class="markdown-cell"><p>Hence, for the example we have chosen to predict the probability of target variable taking value 1, the. estimate of $\beta$ can be found by minimizing the negative log-likelihood</p>
+$$
+\underset{\beta}{\text{min}} \quad \mathcal{l}_x(\beta) = \sum^n_{i=1} \log(1 + e^{\beta x_i}) - y_i\beta x_i
+$$
+
+<p>Since, objective function is non-linear and its derivative is also non-linear, setting the derivative to zero will not give us a closed form solution. Therefore, this need to solved using an iterative solver like:<br />
+- Gradient descent<br />
+- Newton's method<br />
+- Quasi-Newton method</p></div>
+                <div class="markdown-cell"><h2>Segue into Logistic Regression</h2>
+<p>The change in assumption:</p>
+$$ y \sim Bernoulli(p) $$
+
+<p>led to an another popular linear model which is widely used to address binary classification problems. This algorithm is none other than <strong>Logistic Regression</strong>.</p>
+<h3>Scikit-learn Implementation</h3>
+<p>Sklearn provides <code>LogisticRegression</code> class to address the logistic regression and it uses <strong>L-BFGS</strong> solver to estimate $\beta$.<br />
+Now the question can be asked, why L-BFGS and not any other. Reason are:<br />
+- <strong>Gradient descent:</strong><br />
+    - Only uses first-order derivatives (gradients).<br />
+    - As the objective function is not quadratic, it does not guarantee convergence in fixed number of step and the convergence can be very slow.<br />
+- <strong>Newton’s Method:</strong><br />
+    - Uses second-order derivatives (the Hessian matrix) and can converge quickly in theory, it requires computing and inverting the Hessian matrix at each iteration.<br />
+    - For logistic regression, the Hessian is m × m matrix (where m = number of features).<br />
+    - For high-dimensional problems (large m), computing and inverting the Hessian is computationally expensive and memory intensive.<br />
+    - Full Newton’s Method is not practical for large datasets.<br />
+- <strong>Quasi-Newton Methods:</strong><br />
+    - Approximate the Hessian instead of computing it directly.<br />
+    - Build an estimate of the inverse Hessian using gradient information from previous iterations.<br />
+    - <strong>L-BFGS (Limited-memory BFGS):</strong><br />
+        - Stores only a few vectors to approximate the Hessian<br />
+        - Much lower memory usage than full Newton’s method (perfect for high-dimensional problems).<br />
+        - Faster convergence than gradient descent.<br />
+        - Automatic step size selection (no manual learning rate tuning).<br />
+        - It balances speed and computational efficiency.</p></div>
+                <div class="markdown-cell"><h2>Expansion to generalized linear models (GLM)</h2></div>
+                <div class="markdown-cell"><p>Like we made the assumption for the target variable to have bernoulli distribution, we have make assumption for target variable to have other distribution from <strong>exponential family</strong> and they give various linear models. Some famous ones are:</p>
+<ul>
+<li>$ y \sim Binomial(n, p) $ -&gt; Binomial regression</li>
+<li>$ y \sim Multinomial(n, k, p) $ -&gt; Multinomial regression</li>
+<li>$ y \sim Poisson(\lambda) $ -&gt; Poisson regression</li>
+<li>$ y \sim Gamma(\alpha, \beta) $ -&gt; Gamma regression</li>
+</ul></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+[
+  {
+    "index": 0,
+    "filename": "1_linear_regression_matrix.html",
+    "title": "Simple Linear Regression (Matrix form)"
+  },
+  {
+    "index": 1,
+    "filename": "2_Linear_regression_summary.html",
+    "title": "This notebook explains how to calculate linear regression coeeficient summary and in order to understant how to interprate this summary, look at this article -  [**Understanding Linear Regression Output in R**](https://towardsdatascience.com/understanding-linear-regression-output-in-r-7a9cbda948b3)"
+  },
+  {
+    "index": 2,
+    "filename": "3_Linear_regression_MLE.html",
+    "title": "3 Linear Regression Mle"
+  },
+  {
+    "index": 3,
+    "filename": "4_Linear_regression_BLUE.html",
+    "title": "Calculating bias of $\\hat\\beta$"
+  },
+  {
+    "index": 4,
+    "filename": "5_Linear_regression_assumptions_linearity.html",
+    "title": "Linearity"
+  },
+  {
+    "index": 5,
+    "filename": "6_Linear_regression_assumptions_normality.html",
+    "title": "Normality"
+  },
+  {
+    "index": 6,
+    "filename": "7_Linear_regression_assumptions_iid_homoskedasticity.html",
+    "title": "Independence and homoskedasticity"
+  },
+  {
+    "index": 7,
+    "filename": "8_Linear_regression_assumptions_multicollinearity.html",
+    "title": "Multicollinearity"
+  },
+  {
+    "index": 8,
+    "filename": "9_Linear_regression_assumptions_exogeneity.html",
+    "title": "Strict Exogeneity"
+  },
+  {
+    "index": 9,
+    "filename": "10_Linear_regression_regularization.html",
+    "title": "Regularization"
+  },
+  {
+    "index": 10,
+    "filename": "11_Linear_regression_bayesian.html",
+    "title": "11 Linear Regression Bayesian"
+  }
+]

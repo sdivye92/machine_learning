@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regularization</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']]
+            }
+        };
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Table of Contents</h2>
+        </div>
+        <nav class="toc">
+            <div class="toc-chapter">
+                <input type="checkbox" id="toc-chapter-1" class="toc-chapter-toggle" checked>
+                <label for="toc-chapter-1" class="toc-chapter-label">
+                    <span class="toc-chapter-icon">▼</span>
+                    <span>Chapter 1: Linear Regression</span>
+                </label>
+                <div class="toc-sections">
+                    <a href="chapter-0.html" class="toc-item">Section 1: Simple Linear Regression (Matrix form)</a>
+                    <a href="chapter-1.html" class="toc-item">Section 2: 3 Linear Regression Mle</a>
+                    <a href="chapter-2.html" class="toc-item">Section 3: Calculating bias of $\hat\beta$</a>
+                    <a href="chapter-3.html" class="toc-item">Section 4: Linearity</a>
+                    <a href="chapter-4.html" class="toc-item">Section 5: Normality</a>
+                    <a href="chapter-5.html" class="toc-item">Section 6: Independence and homoskedasticity</a>
+                    <a href="chapter-6.html" class="toc-item">Section 7: Multicollinearity</a>
+                    <a href="chapter-7.html" class="toc-item">Section 8: Strict Exogeneity</a>
+                    <a href="chapter-8.html" class="toc-item active">Section 9: Regularization</a>
+                    <a href="chapter-9.html" class="toc-item">Section 10: Bayesian Regression</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="main-content">
+        <div class="content-pane">
+            <div class="chapter-content">
+                <h1 class="chapter-title">Regularization</h1>
+                <div class="markdown-cell"><h1>Regularization</h1></div>
+                <div class="markdown-cell"><p>In any kind of model training, overfitting is one of the major challenges. Overfitting is when the model follows the training data extremely well but performs poorly on unseen data. This occurs when the model training overcompensates for the training error while estimating the trainable parameters, often leading to estimates that are overly complex.</p>
+<p>An example of this is fitting a high-degree polynomial to a linearly distributed data. Even though a high-degree polynomial will perfectly fits the given data, it will have high error on the next data point. One way to think about overfitting is that we have a model that is too complex for the problem, and this complexity allows the model to fit to random noise.</p></div>
+                <div class="markdown-cell"><h2>Overfitting in Linear Regression</h2>
+<p>In linear regression, overfitting can occur due to multiple reasons some of which could be</p>
+<ul>
+<li>
+<p><strong>High dimensionality:</strong><br />
+If the number of predictors, <em>p</em>, is large relative to the number of observations, <em>n</em>, the model can always find coefficients that explain the training data extremely well, even if many predictors are irrelevant. In extreme cases, if $p \ge n$, the model can fit the data perfectly (zero training error), but will generalize poorly.</p>
+</li>
+<li>
+<p><strong>Multicollinearity:</strong><br />
+Highly correlated features can make the regression coefficients unstable, letting the model latch onto random fluctuations in the data.</p>
+</li>
+<li>
+<p><strong>Noise fitting:</strong><br />
+The model tries to minimize squared error, so it may assign large weights to certain predictors just to reduce error from random noise.</p>
+</li>
+</ul></div>
+                <div class="markdown-cell"><h2>How to address Overfitting?</h2>
+<p>To keep the model from becoming overly complex and to improve its ability to generalize, we apply a technique known as <strong><em>regularization</em></strong>. In simple terms, regularization is introducing an additional constraint during training. This discourages the model from relying too heavily on any one feature or from allowing coefficients to grow excessively large.</p>
+<p>Regularization techniques can be broadly categories in one of the two forms</p>
+<ul>
+<li>
+<p><strong>Shrinking:</strong> These methods work by directly penalizing large coefficient values, forcing the model parameters to remain small and stable. This “shrinkage” reduces variance and guards against overfitting.</p>
+</li>
+<li>
+<p><strong>Bayesian prior:</strong> These methods take a probabilistic view, where regularization naturally arises from placing prior distributions on parameters.</p>
+</li>
+</ul></div>
+                <div class="markdown-cell"><h3>$\mathscr{l}2$ Regularization</h3>
+<p>One of the ways to add a constraint to the model parameters is to add it in form of parameters' norm. Simplest would be $\mathscr{l}2$-norm ($\lVert\beta\rVert_2$). With this the cost function for the linear regression in matrix form becomes</p>
+$$ \underset{\beta}{min} \quad (y - X\beta)^T(y - X\beta) + \lambda \beta^T\beta $$
+
+<p>where, $\lambda$ is the regularization parameter, which control the effect of regularization.</p>
+<p>Let us expand this to get our full objective function</p>
+$$ \mathit{J}(\beta) = y^y - 2\beta^TX^Ty + \beta X^TX\beta + \lambda \beta^T\beta $$
+
+<p>Taking its derivative with respect to $\beta$</p>
+$$ \frac{\partial \mathit{J}}{\partial \beta} = - 2X^Ty + 2X^TX\beta + 2\lambda \beta $$
+
+<p>Equating it to zero and solving for $\beta$</p>
+$$- 2X^Ty + 2X^TX\beta + 2\lambda \beta = 0$$
+
+$$X^TX\beta + \lambda \beta = X^Ty$$
+
+$$(X^TX + \lambda \mathit{I})\beta = X^Ty$$
+
+$$\beta = (X^TX + \lambda \mathit{I})^{-1}X^Ty$$
+
+<p>Adding $\mathscr{l}2$-norm of $\beta$ as a constraint is also called <strong>Ridge Regression</strong> and the normal equation for it is</p>
+$$ \hat\beta_{Ridge} = (X^TX + \lambda \mathit{I})^{-1}X^Ty $$
+
+<p>The ridge constrain uniformly smoothen all the parameters shrinking the value for parameters which are noise towards zero.</p></div>
+                <div class="markdown-cell"><h3>$\mathscr{l}1$ Regularization</h3>
+<p>Similar to $\mathcal{l}2$ constraint, we can also add $\mathscr{l}1$ constraint on the parameters. This approach is called <strong>LASSO (Least Absolute Shrinkage and Selection Operator) Regression</strong>.</p>
+$$ \underset{\beta}{min} \quad (y - X\beta)^T(y - X\beta) + \lambda |\beta| $$
+
+<p>However, this cannot be solved by simply taking a derivative because $\mathscr{l}1$-norm is not differential at zero. Instead, we use <strong>subgradient</strong></p>
+\begin{align*}
+    \frac{\partial}{\partial\beta}|\beta_i| =
+    \left\{
+    \begin{array}{lll}
+      1,&  \beta_i\gt0 \\
+      -1,&  \beta_i\lt0 \\
+      [-1, 1],& \beta_i=0
+    \end{array}
+    \right.
+\end{align*}
+
+<p>So the optimality condition for LASSO becomes</p>
+$$- 2X^Ty + 2X^TX\beta + 2\lambda s = 0$$
+
+$$X^T(y - X\beta) = \lambda s$$
+
+<p>where $s \in \partial \lVert\beta\rVert_1$ is the subgradient vector of the L1 norm</p>
+<ul>
+<li>$s_i = \text{sign}(\beta_i) \quad \forall \beta_i \neq 0$</li>
+<li>$s_i \in [-1, 1] \quad \forall \beta_i = 0$</li>
+</ul>
+<p>Because of this, there is no closed-form solution. However, solution can be found using techniques like</p>
+<ul>
+<li>Coordinate Descent (most common for tabular data)</li>
+<li>LARS-Lasso (efficient for small-to-medium datasets)</li>
+<li>Proximal gradient methods (for large-scale problems)</li>
+</ul>
+<p>Due to the "kink" at 0 for $|\beta_i|$, the solution can hit zero exactly for the value for parameters which are noise. Therefore, this can performs automatic feature selection.</p></div>
+                <div class="markdown-cell"><h3>Tikhonov Regularization</h3>
+<p>Earlier we had used $\mathscr{l}2$-norm of $\beta$ as a constraint, however, if we can also add $\mathscr{l}2$-norm of $\Gamma\beta$ ($\lVert \Gamma\beta\rVert_2^2$), where <em>$\Gamma$</em> is a regularization matrix. This is called <strong>Tikhonov Regression</strong>.</p>
+$$ \underset{\beta}{min} \quad (y - X\beta)^T(y - X\beta) + \lambda (\Gamma\beta)^T(\Gamma\beta) $$
+
+<p>On solving this, we get normal equation as</p>
+$$ \hat\beta_{Tikhonov} = (X^TX + \lambda \Gamma^T\Gamma)^{-1}X^Ty $$
+
+<p>In this, if we substitute $\Gamma = I$, we get Ridge regression. So we can say that Ridge regression is a special case of Tikhonov regression.</p>
+<p><strong>What benefit does this give over Ridge?</strong></p>
+<p>If we want to define a certain structure of parameters, it is not possible is Ridge. But in Tikhonov, we can capture this structure in form of regularization matrix ($\Gamma$).</p>
+<p>For example, in a time series data if we know that the dependencies on previous $\beta$s is smooth, the regularization matrix could be a difference operator to enforce smoothness between neighboring coefficients.</p>
+<p>In summary,</p>
+<ul>
+<li><strong><em>Ridge:</em></strong> Shrinks coefficients directly (no structure).</li>
+<li><strong><em>Tikhonov:</em></strong> Lets you encode what kind of structure you want — smoothness in time, continuity in space, or stable curvature — by choosing the penalty operator $\Gamma$.</li>
+</ul></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>

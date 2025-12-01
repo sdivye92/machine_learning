@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3 Linear Regression Mle</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']]
+            }
+        };
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Table of Contents</h2>
+        </div>
+        <nav class="toc">
+            <div class="toc-chapter">
+                <input type="checkbox" id="toc-chapter-1" class="toc-chapter-toggle" checked>
+                <label for="toc-chapter-1" class="toc-chapter-label">
+                    <span class="toc-chapter-icon">▼</span>
+                    <span>Chapter 1: Linear Regression</span>
+                </label>
+                <div class="toc-sections">
+                    <a href="chapter-0.html" class="toc-item">Section 1: Simple Linear Regression (Matrix form)</a>
+                    <a href="chapter-1.html" class="toc-item active">Section 2: 3 Linear Regression Mle</a>
+                    <a href="chapter-2.html" class="toc-item">Section 3: Calculating bias of $\hat\beta$</a>
+                    <a href="chapter-3.html" class="toc-item">Section 4: Linearity</a>
+                    <a href="chapter-4.html" class="toc-item">Section 5: Normality</a>
+                    <a href="chapter-5.html" class="toc-item">Section 6: Independence and homoskedasticity</a>
+                    <a href="chapter-6.html" class="toc-item">Section 7: Multicollinearity</a>
+                    <a href="chapter-7.html" class="toc-item">Section 8: Strict Exogeneity</a>
+                    <a href="chapter-8.html" class="toc-item">Section 9: Regularization</a>
+                    <a href="chapter-9.html" class="toc-item">Section 10: Bayesian Regression</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="main-content">
+        <div class="content-pane">
+            <div class="chapter-content">
+                <h1 class="chapter-title">3 Linear Regression Mle</h1>
+                <div class="markdown-cell"><p>Given above 2D data, let us try model the relationship $Y \sim X$. It can be observed that the relationship between X and Y is appears to linear but it is not perfect. This imperfection could possibly be result of some error or noise.<br />
+To begin modeling the relationship, let us first assume the <strong>relationship is additive</strong> and <strong>the error is Gaussian with mean zero and some standard deviation (white noise)</strong>. With this, we can write our linear model as</p>
+$$ y = \beta_1 x + \beta_0 + \epsilon $$
+
+<p>where,</p>
+$$ \epsilon \sim \mathcal{N}(0,\sigma^2) $$</div>
+                <div class="markdown-cell"><p>Combining above equations we can write,</p>
+$$ y \sim \mathcal{N}(\beta_1 x + \beta_0, \sigma^2) $$
+
+<p>In this we get three parameters, $\beta_0$, $\beta_1$ and $\sigma^2$. Our main goal is to find the best parameters for these.</p></div>
+                <div class="markdown-cell"><p>This can be done using maximum likelihood estimation (MLE). For this, we can write the conditional distribution of y given x in terms of this Gaussian.</p>
+$$ \mathcal{f}(y|x; \beta_0,\beta_1,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp{-\frac{(y - (\beta_1 x + \beta_0))^2}{2\sigma^2}} $$</div>
+                <div class="markdown-cell"><p>Lets say we have n oberved points in our data and if we assume that <strong>each point is independent and identically distributed (iid)</strong>, we can write the likelihood function with respect to all of our observed points as the product of each individual probability density.</p>
+$$ \mathcal{L}_y(\beta_0,\beta_1,\sigma^2) = \prod^n_{i=1} \frac{1}{\sqrt{2\pi\sigma_i^2}}\exp{-\frac{(y_i - (\beta_1 x_i + \beta_0))^2}{2\sigma_i^2}} $$</div>
+                <div class="markdown-cell"><p>If we assume that <strong>the standard deviation ($\sigma$) is constant for all data points (homoskedasticity)</strong>, we can factor out the first part of this equation out of the product</p>
+\begin{align*}
+    \mathcal{L}_y(\beta_0,\beta_1) & = \Bigg(\frac{1}{\sqrt{2\pi\sigma^2}}\Bigg)^n \prod^n_{i=1} \exp \big(-\frac{(y_i - (\beta_1 x_i + \beta_0))^2}{2\sigma^2} \big) \\
+    & = \Bigg(\frac{1}{\sqrt{2\pi\sigma^2}}\Bigg)^n \exp \big( -\frac{1}{2\sigma^2}\sum^n_{i=1}(y_i - (\beta_1 x_i + \beta_0))^2 \big)
+\end{align*}</div>
+                <div class="markdown-cell"><p>Maximising likelihood function may be complex, therefore, we take a log of both side and convert it to log likelihood</p>
+\begin{align*}
+    \mathcal{l}_y(\beta_0,\beta_1) & = \ln \Bigg(\frac{1}{\sqrt{2\pi\sigma^2}}\Bigg)^n + \ln \big( \exp \big( -\frac{1}{2\sigma^2}\sum^n_{i=1}(y_i - (\beta_1 x_i + \beta_0))^2 \big) \big) \\
+    & = n \ln \Bigg(\frac{1}{\sqrt{2\pi\sigma^2}}\Bigg) - \frac{1}{2\sigma^2}\sum^n_{i=1}(y_i - (\beta_1 x_i + \beta_0))^2
+\end{align*}</div>
+                <div class="markdown-cell"><p>Since constants do not affect the optimization, problem can be re-written as</p>
+$$ \underset{\beta_0,\beta_1}{max} \quad - \frac{1}{2\sigma^2}\sum^n_{i=1}(y_i - (\beta_1 x_i + \beta_0))^2 $$
+
+<p>or</p>
+\begin{align*}
+\underset{\beta_0,\beta_1}{min} & \quad \frac{1}{2\sigma^2}\sum^n_{i=1}(y_i - (\beta_1 x_i + \beta_0))^2 \\
+\underset{\beta_0,\beta_1}{min} & \quad \frac{n}{2\sigma^2}\frac{1}{n}\sum^n_{i=1}(y_i - (\beta_1 x_i + \beta_0))^2 \\
+\underset{\beta_0,\beta_1}{min} & \quad \frac{1}{n}\sum^n_{i=1}(y_i - (\beta_1 x_i + \beta_0))^2 \\
+\underset{\beta_0,\beta_1}{min} & \quad MSE(y, \hat{y})
+\end{align*}</div>
+                <div class="markdown-cell"><p>This can be extended to multi-variable data having m independent variables as</p>
+$$ \underset{\beta}{min} \quad \lVert y - \text{X} \beta \rVert_2^2 $$
+
+<p>where $\beta$ is the parameter vector of size (n x 1) and $\text{X}$ is the data matrix of size ((m+1) x n) with 1st column as 1.</p></div>
+                <div class="markdown-cell"><p>Therefore, on optimizing this we get</p>
+$$ (\text{X}^T\text{X})\beta = \text{X}^Ty $$
+
+<p>So if (n x m)-matrix $\text{X}$ has rank of $\textit{m}$, which is possible only when there is <strong>no perfect multicollinearity</strong>, then (m x m)-matrix $\text{X}^T\text{X}$ will also have rank of $\textit{m}$ (according to second last property <a href="https://en.wikipedia.org/wiki/Rank_(linear_algebra)#Properties">here</a>)</p>
+<p>In this case, we get the unique solution</p>
+$$ \hat\beta = (\text{X}^T\text{X})^{-1}\text{X}^Ty $$</div>
+                <div class="markdown-cell"><p>In summary, we made following assumption:</p>
+<ul>
+<li>The relationship is additively linear</li>
+<li>The errors are white noise</li>
+<li>Each point is IID</li>
+<li>Homoskedasticity</li>
+<li>Multicollinearity</li>
+</ul></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>

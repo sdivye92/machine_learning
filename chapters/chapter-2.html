@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculating bias of $\hat\beta$</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']]
+            }
+        };
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Table of Contents</h2>
+        </div>
+        <nav class="toc">
+            <div class="toc-chapter">
+                <input type="checkbox" id="toc-chapter-1" class="toc-chapter-toggle" checked>
+                <label for="toc-chapter-1" class="toc-chapter-label">
+                    <span class="toc-chapter-icon">▼</span>
+                    <span>Chapter 1: Linear Regression</span>
+                </label>
+                <div class="toc-sections">
+                    <a href="chapter-0.html" class="toc-item">Section 1: Simple Linear Regression (Matrix form)</a>
+                    <a href="chapter-1.html" class="toc-item">Section 2: 3 Linear Regression Mle</a>
+                    <a href="chapter-2.html" class="toc-item active">Section 3: Calculating bias of $\hat\beta$</a>
+                    <a href="chapter-3.html" class="toc-item">Section 4: Linearity</a>
+                    <a href="chapter-4.html" class="toc-item">Section 5: Normality</a>
+                    <a href="chapter-5.html" class="toc-item">Section 6: Independence and homoskedasticity</a>
+                    <a href="chapter-6.html" class="toc-item">Section 7: Multicollinearity</a>
+                    <a href="chapter-7.html" class="toc-item">Section 8: Strict Exogeneity</a>
+                    <a href="chapter-8.html" class="toc-item">Section 9: Regularization</a>
+                    <a href="chapter-9.html" class="toc-item">Section 10: Bayesian Regression</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="main-content">
+        <div class="content-pane">
+            <div class="chapter-content">
+                <h1 class="chapter-title">Calculating bias of $\hat\beta$</h1>
+                <div class="markdown-cell"><p>In previous section we derived cost function for linear regression using Maximum Likelihood Estimation (MLE) and in the process we made few assumptions. These assumptions are also the assumptions of Ordinary Least Squared (OLS) Linear Regression. Let us list them down once again here:</p>
+<ul>
+<li><strong>Linearity</strong> : The relationship between target variable and dependent variable(s) is linear in parameters</li>
+<li><strong>Normality</strong> : The target variable is normally distributed which extends from the assumption that error is white noise</li>
+<li><strong>Data is random sample from the population</strong> : The data points are independent and identically distributed (IID)</li>
+<li><strong>Spherical errors</strong> : The error is homoscedasticity and no serial correlation. This means that there error have same finite variance and are not correlation</li>
+<li><strong>No perfect multicollinearity</strong> : There is no linear dependence in the independent variables. i.e the design matrix has full rank</li>
+<li><strong>Strict exogeneity</strong> : There is no correlation between errors and independent variables or the expectation of errors conditioned on the design matrix is zero</li>
+</ul></div>
+                <div class="markdown-cell"><p>The Gauss–Markov theorem holds when the four assumptions of OLS: linearity, no multicollinearity, strict exogeneity, and spherical errors are adhered. If we make these four assumptions, then estimate of the coefficients of the OLS ($\hat\beta$) is <strong>BLUE</strong>, the best (minimum-variance) linear unbiased estimator.</p></div>
+                <div class="markdown-cell"><p>Let us verify that the $\hat\beta$ we got from OLS is unbiased and have minimum variance.</p></div>
+                <div class="markdown-cell">$$ \hat\beta = (\text{X}^T\text{X})^{-1}\text{X}^Ty $$</div>
+                <div class="markdown-cell"><h3>Calculating bias of $\hat\beta$</h3>
+<p>For $\hat\beta$ to be unbiased, $\mathbb{E}[\hat\beta | \text{X}] = \beta$</p>
+\begin{align*}
+\mathbb{E}[\hat\beta | \text{X}] &= \mathbb{E}[(\text{X}^T\text{X})^{-1}\text{X}^Ty | \text{X}] \\
+                                 &= \mathbb{E}[(\text{X}^T\text{X})^{-1}\text{X}^T(\text{X}\beta+\epsilon) | \text{X}] \\
+                                 &= \mathbb{E}[(\text{X}^T\text{X})^{-1}\text{X}^T\text{X}\beta+(\text{X}^T\text{X})^{-1}\text{X}^T\epsilon) | \text{X}] \\
+                                 &= \mathbb{E}[(\text{X}^T\text{X})^{-1}(\text{X}^T\text{X})\beta+(\text{X}^T\text{X})^{-1}\text{X}^T\epsilon) | \text{X}] \\
+                                 &= \mathbb{E}[\mathit{I}\beta+(\text{X}^T\text{X})^{-1}\text{X}^T\epsilon) | \text{X}] \\
+                                 &= \mathbb{E}[\mathit{I}\beta | \text{X}]+\mathbb{E}[(\text{X}^T\text{X})^{-1}\text{X}^T\epsilon) | \text{X}] \\
+                                 &= \beta+\mathbb{E}[(\text{X}^T\text{X})^{-1}\text{X}^T\epsilon) | \text{X}] \\
+\end{align*}
+
+<p>Since we had already made assumption at expectation of error conditioned on design matrix (X) is zero. We get</p>
+$$\mathbb{E}[(\text{X}^T\text{X})^{-1}\text{X}^T\epsilon | \text{X}]=0$$
+
+<p>Therefore,</p>
+$$\mathbb{E}[\hat\beta]=\beta$$</div>
+                <div class="markdown-cell"><h3>Calculating variance of $\hat\beta$</h3>
+<p>From previous bias calculation we know that $\hat\beta = \beta+(\text{X}^T\text{X})^{-1}\text{X}^T\epsilon)$</p>
+\begin{align*}
+\mathbb{V}[\hat\beta | \text{X}] &= \mathbb{V}[\beta+(\text{X}^T\text{X})^{-1}\text{X}^T\epsilon) | \text{X}] \\
+                      &= \mathbb{V}[\beta | \text{X}]+\mathbb{V}[(\text{X}^T\text{X})^{-1}\text{X}^T\epsilon) | \text{X}] \\
+\end{align*}
+
+<p>Since, $\beta$ is a non-random, from the properties of variance, $\mathbb{V}[\beta | \text{X}]=0$</p>
+$$
+\mathbb{V}[\hat\beta | \text{X}] = \mathbb{V}[(\text{X}^T\text{X})^{-1}\text{X}^T\epsilon) | \text{X}]
+$$
+
+<p>Let $\mathit{A} = (\text{X}^T\text{X})^{-1}\text{X}^T$ and since A is also non-random, from the properties of variance, $\mathbb{V}[\mathit{A}\epsilon | \text{X}] = \mathit{A}\mathbb{V}[\epsilon | \text{X}]\mathit{A}^T$. Further, from the assumption of spherical error, $\mathbb{V}[\epsilon | \text{X}] = \sigma^2\mathit{I}$</p>
+<p>Therefore,</p>
+\begin{align*}
+\mathbb{V}[\hat\beta | \text{X}] &= \mathit{A}\sigma^2\mathit{I}\mathit{A}^T \\
+                                 &= \sigma^2\mathit{I}\mathit{A}\mathit{A}^T \\
+                                 &= \sigma^2\mathit{I}((\text{X}^T\text{X})^{-1}\text{X}^T)((\text{X}^T\text{X})^{-1}\text{X}^T)^T \\
+                                 &= \sigma^2\mathit{I}((\text{X}^T\text{X})^{-1}\text{X}^T\text{X}(\text{X}^T\text{X})^{-1}) \\
+                                 &= \sigma^2\mathit{I}(\text{X}^T\text{X})^{-1} \\
+                                 &= \sigma^2(\text{X}^T\text{X})^{-1}
+\end{align*}</div>
+                <div class="markdown-cell"><h3>Proof that $\hat\beta$ is the minimum variance linear unbiased estimator</h3>
+<p>Now that we have found the variance of our estimator, in order to prove that is has the minimum variance, we have to find the variance for all other linear unbiased estimators. For this, we should create a new matrix <strong>C</strong> such that any other linear unbiased estimator of $\beta$, say $\tilde\beta = \text{C}y$ has greater or equal variance than $\hat\beta$.</p>
+<p>To have $\tilde\beta$ unbiased</p>
+\begin{align*}
+& \mathbb{E}[\tilde\beta | \text{X}] = \beta & \\
+& \mathbb{E}[\text{C}y | \text{X}] = \beta & \\
+& \mathbb{E}[\text{CX}\beta + \epsilon | \text{X}] = \beta & \\
+& \mathbb{E}[\text{CX}\beta | \text{X}] + {\mathbb{E}[\epsilon | \text{X}]} = \beta & \\
+& \mathbb{E}[\text{CX}\beta | \text{X}] + 0 = \beta & \because \text{ strict exogeneity} \\
+& \mathbb{E}[\text{CX}\beta | \text{X}] = \beta & \\
+& \text{CX}\beta = \beta \\
+& \text{CX}\beta\beta^{-1} = \beta\beta^{-1} \\
+& \text{CX} = \mathit{I}
+\end{align*}
+
+<p>Therefore, for $\tilde\beta$ to be unbiased, $\text{CX} = \mathit{I}$</p>
+<p>We know that $\hat\beta = (\text{X}^T\text{X})^{-1}\text{X}^Ty$ so $\hat\beta = \text{C}_{OLS}y$. We can express <strong>C</strong> for $\tilde\beta$ as a linear perturbation to $\text{C}_{OLS}$.</p>
+$$
+C = D + C_{OLS} \\
+C = D + (\text{X}^T\text{X})^{-1}\text{X}^T
+$$
+
+<p>Since, for unbiasedness of $\tilde\beta$, <strong>C</strong> has to satisfy $\text{CX} = \mathit{I}$ and <strong>D</strong> must lie in the null space of <strong><em>X</em></strong> i.e $\text{DX} = 0$. This can be shown as below</p>
+\begin{align*}
+& \text{CX} = \mathit{I} & \\
+& (\text{C}_{OLS} + \text{D})\text{X} = \mathit{I} & \\
+& \text{C}_{OLS}\text{X} + \text{D}\text{X} = \mathit{I} & \\
+& \mathit{I} + \text{D}\text{X} = \mathit{I} & \because \hat\beta \text{ is unbiased so } \text{C}_{OLS}\text{X} = \mathit{I}\\
+& \mathit{I} + \text{D}\text{X} - \mathit{I}= \mathit{I} - \mathit{I} \\
+& \text{D}\text{X} = 0
+\end{align*}
+
+<p>We should also represent $\tilde\beta$ in terms of $\hat\beta$</p>
+\begin{align*}
+\tilde\beta &= Cy \\
+            &= (D + (\text{X}^T\text{X})^{-1}\text{X}^T)y \\
+            &= Dy + (\text{X}^T\text{X})^{-1}\text{X}^Ty \\
+            &= Dy + \hat\beta
+\end{align*}
+
+<p>Therefore, re-arranging it we get $\tilde\beta = \hat\beta + Dy$</p>
+<h4>Now let us calculate variance of $\tilde\beta$</h4>
+\begin{align*}
+\mathbb{V}[\tilde\beta | \text{X}] &= \mathbb{V}[\hat\beta + Dy | \text{X}] \\
+                                   &= \mathbb{V}[\hat\beta | \text{X}]] + \mathbb{V}[Dy | \text{X}] \\
+                                   &= \sigma^2(\text{X}^T\text{X})^{-1} + \mathbb{V}[Dy | \text{X}] \\
+\end{align*}
+
+<p>Let us solve for second term right hand side</p>
+\begin{align*}
+\mathbb{V}[Dy | \text{X}] &= \mathbb{V}[D(X\beta + \epsilon) | \text{X}] & \\
+                          &= \mathbb{V}[DX\beta | \text{X}] + \mathbb{V}[D\epsilon | \text{X}] & \\
+                          &= \mathbb{V}[0 | \text{X}] + \mathbb{V}[D\epsilon | \text{X}] & \because DX = 0 \implies DX\beta = 0\\
+                          &= 0 + \mathbb{V}[D\epsilon | \text{X}] & \\
+                          &= D\mathbb{V}[\epsilon | \text{X}]D^T & \\
+                          &= D\sigma^2\mathit{I}D^T & \because \text{ spherical error} \\
+                          &= \sigma^2DD^T & \\
+\end{align*}
+
+<p>Replacing this in variance of $\tilde\beta$</p>
+\begin{align*}
+\mathbb{V}[\tilde\beta | \text{X}] &= \mathbb{V}[\hat\beta | \text{X}]] + \sigma^2DD^T \\
+\end{align*}
+
+<p>Since, $DD^T$ is positive semi-definite, value for $\sigma^2DD^T$ will always be zero or positive. This means that the variance of $\tilde\beta$ will always be equal or greater that variance of $\hat\beta$. With this, we can conclude that there are no linear unbiased estimators that are smaller in variance than the OLS estimator. While they may be the same, our OLS will remain <strong>BLUE</strong>.</p></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>

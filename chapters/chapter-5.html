@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Independence and homoskedasticity</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']]
+            }
+        };
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Table of Contents</h2>
+        </div>
+        <nav class="toc">
+            <div class="toc-chapter">
+                <input type="checkbox" id="toc-chapter-1" class="toc-chapter-toggle" checked>
+                <label for="toc-chapter-1" class="toc-chapter-label">
+                    <span class="toc-chapter-icon">▼</span>
+                    <span>Chapter 1: Linear Regression</span>
+                </label>
+                <div class="toc-sections">
+                    <a href="chapter-0.html" class="toc-item">Section 1: Simple Linear Regression (Matrix form)</a>
+                    <a href="chapter-1.html" class="toc-item">Section 2: 3 Linear Regression Mle</a>
+                    <a href="chapter-2.html" class="toc-item">Section 3: Calculating bias of $\hat\beta$</a>
+                    <a href="chapter-3.html" class="toc-item">Section 4: Linearity</a>
+                    <a href="chapter-4.html" class="toc-item">Section 5: Normality</a>
+                    <a href="chapter-5.html" class="toc-item active">Section 6: Independence and homoskedasticity</a>
+                    <a href="chapter-6.html" class="toc-item">Section 7: Multicollinearity</a>
+                    <a href="chapter-7.html" class="toc-item">Section 8: Strict Exogeneity</a>
+                    <a href="chapter-8.html" class="toc-item">Section 9: Regularization</a>
+                    <a href="chapter-9.html" class="toc-item">Section 10: Bayesian Regression</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="main-content">
+        <div class="content-pane">
+            <div class="chapter-content">
+                <h1 class="chapter-title">Independence and homoskedasticity</h1>
+                <div class="markdown-cell"><h1>Independence and homoskedasticity</h1></div>
+                <div class="markdown-cell"><p>In this section, we will take a look at two assumptions: independence and homoskedasticity, together as they are very tied together.</p></div>
+                <div class="markdown-cell"><p>In <a href="3_Linear_regression_MLE.ipynb">section 3</a>, we made an assumption on the error:</p>
+$$ \epsilon \sim \mathcal{N}(0, \sigma^2\mathit{I}) $$
+
+<p>In this we are saying that the errors are centered around zero and have a covariance matrix ($\Sigma$) of form</p>
+$$
+\Sigma =
+    \begin{bmatrix}
+    \sigma^2 & 0 & \cdots & 0 \\
+    0 & \sigma^2 & \cdots & 0 \\
+    \vdots & \vdots & \ddots & \vdots \\
+    0 & 0 & \cdots & \sigma^2 \\
+    \end{bmatrix}
+$$
+
+<p>This is what we call a spherical error, which means the errors for each data point are same (homoskedasticity) and not correlated. These can be formally defined as</p>
+<ul>
+<li>Homoskedasticity : The observations have a constant variance $\sigma^2$</li>
+</ul>
+$$ \mathbb{V}[\epsilon_n | \text{X}] = \sigma^2, \quad n \in \{1,\dots,N\} $$
+
+<ul>
+<li>Error terms are uncorrelated</li>
+</ul>
+$$ \mathbb{E}[\epsilon_n \epsilon_m | \text{X}] = 0, \quad n,m \in \{1,\dots,N\}, n \neq m $$
+
+<p>Taking both of these two sub-assumptions together at once, we can formalize spherical errors as</p>
+$$ \mathbb{V}[\mathbf{\epsilon} | \text{X}] = \sigma^2\mathit{I} $$</div>
+                <div class="markdown-cell"><h2>Breaking the assumption</h2></div>
+                <div class="markdown-cell"><h3>Heteroscedasticity but with uncorrelated errors</h3>
+<p>But in most practical scenario, the assumption of homoscedasticity does not hold. So, let us assumes heteroscedasticity but with uncorrelated errors:</p>
+$$
+\Sigma =
+    \begin{bmatrix}
+    \sigma_1^2 & 0 & \cdots & 0 \\
+    0 & \sigma_2^2 & \cdots & 0 \\
+    \vdots & \vdots & \ddots & \vdots \\
+    0 & 0 & \cdots & \sigma_n^2 \\
+    \end{bmatrix}
+$$
+
+<p>Since, there the covariance terms are zero, the data points are still independent. Therefore, we can write the likelihood of the data as:</p>
+$$ \mathcal{L}_x(\beta) = \prod^n_{i=1} \frac{1}{\sqrt{2\pi\sigma_i^2}}\exp{-\frac{(y_i - (\beta x_i))^2}{2\sigma_i^2}} $$
+
+<p>Converting this to log-likelihood by taking log on both sides:</p>
+\begin{align*}
+\mathcal{l}_x(\beta) &= \sum^n_{i=1} \log\Big(\frac{1}{\sqrt{2\pi\sigma_i^2}}\exp{-\frac{(y_i - (\beta x_i))^2}{2\sigma_i^2}}\Big) \\
+                     &= \sum^n_{i=1} \log\Big(\frac{1}{\sqrt{2\pi\sigma_i^2}}\Big) + \log\Big(\exp{-\frac{(y_i - (\beta x_i))^2}{2\sigma_i^2}}\Big) \\
+                     &= \sum^n_{i=1} \log{1} - \log{\sqrt{2\pi\sigma_i^2}} -\frac{(y_i - (\beta x_i))^2}{2\sigma_i^2} \\
+                     &= \sum^n_{i=1} \log{1} - \frac{1}{2}\sum^n_{i=1}\log{2\pi\sigma_i^2} - \sum^n_{i=1}\frac{(y_i - (\beta x_i))^2}{2\sigma_i^2} \\
+\end{align*}
+
+<p>In above, log(1) is a constant and even if $\sigma_i^2$ are different for each data point, they are not dependent on $\beta$ and hence constant. Since constants do not affect the optimization, problem can be re-written as:</p>
+$$
+\underset{\beta}{\text{max}} \quad - \sum^n_{i=1}\frac{(y_i - (\beta x_i))^2}{2\sigma_i^2}
+$$
+
+<p>or</p>
+$$
+\underset{\beta}{\text{min}} \quad \sum^n_{i=1}\frac{(y_i - (\beta x_i))^2}{2\sigma_i^2}
+$$
+
+<p>If s = $\frac{1}{\sigma^2}$ which act as a weight assigned to each of the data points in the least square. Hence, this is called <strong>weighted least square (WLS)</strong>.</p>
+$$
+\underset{\beta}{\text{min}} \quad \frac{1}{2}\sum^n_{i=1}s_i(y_i - (\beta x_i))^2
+$$
+
+<p>or in matrix form</p>
+$$
+\underset{\beta}{\text{min}} \quad (y - \text{X}\beta)^{T}S(y - \text{X}\beta)
+$$
+
+<p>Since this is linear in parameters, quadratic and its derivative is linear, we can find an analytical estimate of $\beta$ by setting it derivative to zero.</p>
+$$
+\hat\beta_{WLS} = (\text{X}^{T}S\text{X})^{-1}\text{X}^{T}Sy
+$$</div>
+                <div class="markdown-cell"><h4>Scikit-learn Implementation</h4>
+<p>In scikit-learn, you can set the <code>sample_weight</code> keyword in the fit function.</p></div>
+                <div class="markdown-cell"><h3>Heteroscedasticity but with correlated errors</h3>
+<p>This time let us assumes heteroscedasticity but errors are correlated</p>
+$$ \epsilon \sim \mathcal{N}(0,\Sigma) $$
+
+<p>In this case, we cannot assume data points to be independent and the likelihood need to consider the joint probability density function for normal distribution</p>
+$$
+\mathcal{f}(y|X;\beta,\Sigma) = \frac{1}{(2\pi)^{n/2}{|\Sigma|}^{1/2}}\exp\Big(-\frac{1}{2}(y - \text{X}\beta)^{T}\Sigma^{-1/2}(y - \text{X}\beta)\Big)
+$$
+
+<p>Converting to log-likelihood by taking log on both side</p>
+\begin{align*}
+\mathcal{l}(\beta) &= \frac{n}{2}\log{(2\pi)} + \frac{1}{2}\log{|\Sigma|} + \log\Big(\exp\Big(-\frac{1}{2}(y - \text{X}\beta)^{T}\Sigma^{-1/2}(y - \text{X}\beta)\Big)\Big) \\
+                   &= \frac{n}{2}\log{(2\pi)} + \frac{1}{2}\log{|\Sigma|} - \frac{1}{2}(y - \text{X}\beta)^{T}\Sigma^{-1/2}(y - \text{X}\beta) \\
+\end{align*}
+
+<p>This needs to be maximized with respect to $\beta$ so $\log{(2\pi)}$ and $\log{|\Sigma|}$ are constants. Since constants do not affect the optimization, problem can be re-written as:</p>
+$$
+\underset{\beta}{\text{max}} \quad -(y - \text{X}\beta)^{T}\Sigma^{-1/2}(y - \text{X}\beta)
+$$
+
+<p>or</p>
+$$
+\underset{\beta}{\text{min}} \quad (y - \text{X}\beta)^{T}\Sigma^{-1/2}(y - \text{X}\beta)
+$$
+
+<p>Since this is linear in parameters, quadratic and its derivative is linear, we can find an analytical estimate of $\beta$ by setting it derivative to zero. Further, this generalizes least square to any positive-definite covariance matrix, this is called <strong>generalized least square (GLS)</strong></p>
+$$
+\hat\beta_{GLS} = (\text{X}^{T}\Sigma^{1/2}\text{X})^{-1}\text{X}^{T}\Sigma^{1/2}y
+$$
+
+<p>Similar to OLS, it can be shown that <strong>GLS</strong> is also <strong>BLUE</strong> in the presence of heteroscedastic errors. As <strong>WLS</strong> is a special case of <strong>GLS</strong> with uncorrelated errors where $s_i = \frac{1}{\sigma_i^2}$, <strong>WLS</strong> is also <strong>BLUE</strong> in the presence of heteroscedastic uncorrelated errors.</p>
+<p>If the error covariance matrix is known, we can solve GLS and get the estimate of $\beta$. However, most of the time, structure of $\Sigma$ is unknown. In this scenario we can use <strong>Feasible Generalized Least Squares (FGLS)</strong> which is can iterative method where we also estimate the covariance matrix iteratively. </p></div>
+                <div class="markdown-cell"><h4>Scikit-learn Implementation</h4>
+<p>At the moment (June 2025) scikit-learn does not provide an implementation of GLS, you can use it via another propular statistics library <code>statsmodel</code> using <code>statsmodels.regression.linear_model.GLS</code>.</p></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+</body>
+</html>
