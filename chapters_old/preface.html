@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>This notebook explains how to calculate linear regression coeeficient summary and in order to understant how to interprate this summary, look at this article -  [**Understanding Linear Regression Output in R**](https://towardsdatascience.com/understanding-linear-regression-output-in-r-7a9cbda948b3)</title>
+    <title>1 Linear Regression Mle</title>
     <link rel="stylesheet" href="../styles.css">
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -30,6 +30,7 @@
                     <span><a href="preface.html">Chapter 1: Linear Regression</a></span>
                 </label>
                 <div class="toc-sections">
+                    
                     <a href="chapter-0.html" class="toc-item">Section 1: Linear Regression And Maximum Likelihood Estimation (MLE)</a>
                     <a href="chapter-1.html" class="toc-item">Section 2: Linear Regression - Matrix form</a>
                     <!-- <a href="chapter-2.html" class="toc-item">Section 3: This notebook explains how to calculate linear regression coeeficient summary and in order to understant how to interprate this summary, look at this article -  [**Understanding Linear Regression Output in R**](https://towardsdatascience.com/understanding-linear-regression-output-in-r-7a9cbda948b3)</a> -->
@@ -48,33 +49,10 @@
     <div class="main-content">
         <div class="content-pane">
             <div class="chapter-content">
-                <h1 class="chapter-title">This notebook explains how to calculate linear regression coeeficient summary and in order to understant how to interprate this summary, look at this article -  [**Understanding Linear Regression Output in R**](https://towardsdatascience.com/understanding-linear-regression-output-in-r-7a9cbda948b3)</h1>
-                <div class="markdown-cell"><h3>This notebook explains how to calculate linear regression coeeficient summary and in order to understant how to interprate this summary, look at this article -  <a href="https://towardsdatascience.com/understanding-linear-regression-output-in-r-7a9cbda948b3"><strong>Understanding Linear Regression Output in R</strong></a></h3></div>
-                <div class="markdown-cell"><p>For data with $\textit{N}$ examples and $\textit{p}$ features linear regression considers the target variable, y, to be linearly dependent on the predictors and the equation is given as</p>
-$$ y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_n x_n + \epsilon$$
-
-<p>or,</p>
-$$ y = \beta_0 1 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_n x_n + \epsilon $$
-
-<p>This can be re-written in matrix form as</p>
-$$ \mathbf{y} = X\mathbf{\beta} + \mathbf{\epsilon}$$
-
-<p>where</p>
-$\epsilon \sim \mathcal{N}(0, \sigma^2)$
-
-$X_{N\times(p+1)} = [\mathbf{1}\; \mathbf{x_1}\; \mathbf{x_2}\; \cdots\; \mathbf{x_p}]$
-
-<p>Estimate for the beta can found using</p>
-$$ \hat{\beta} = (X^T X)^{-1} X^T\textbf{y} $$
-
-<p>where first value of beta vector is intercept and rest values are the slopes corresponding to each feature.</p>
-<p>For these estimates of intercept and slopes, standard error and t-statistics are given as</p>
-$$ SE(\hat{\beta_i}) = \sqrt{[(X^T X)^{-1} \sigma_{res}^2]_{ii}} \quad \forall \quad i \in [1 \cdots n] $$
-
-$$ \text{t-stat}(\hat{\beta_i}) = \frac{SE(\hat{\beta_i})}{\hat{\beta_i}} $$
-
-<p>where</p>
-$$ \sigma_{res}^2 = \frac{1}{N-p} \sum_{i=1}^N (y_i - \hat{y_i})^2 $$</div>
+                <h1 class="chapter-title">Linear Regression</h1>
+                <p>Linear regression is one of the most widely used and foundational tools in statistics and machine learning. It serves as a gateway to understanding more complex modeling techniques and provides essential insights into the nature of relationships between variables. This chapter begins with a simple intuitive visualization of data, and step by step, builds the mathematical formulation of the linear regression model. We focus on the probabilistic interpretation of the model, the derivation of the maximum likelihood estimators, and the assumptions that underlie the method.</p>
+                <br />
+                <p>The goal is not just to present formulas but to offer a deeper understanding of why linear regression works the way it does, what its limitations are, and how it connects with broader concepts in data analysis and statistical inference. Whether the reader is a student encountering linear regression for the first time, or a practitioner looking to revisit the fundamentals, this chapter aims to offer a balanced blend of theory, intuition, and practical considerations.</p>
             </div>
         </div>
     </div>
