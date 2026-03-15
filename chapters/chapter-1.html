@@ -177,8 +177,8 @@ $$ X^T\textbf{y} = (X^TX)\mathbf{\beta} $$
 <p>Left multiplying both side by $(X^TX)^{-1}$ we get</p>
 $$ (X^TX)^{-1}X^T\textbf{y} = (X^TX)^{-1}(X^TX)\mathbf{\beta} $$
 
-<p>therefore,</p>
-$$ \mathbf{\beta} = (X^TX)^{-1}X^T\textbf{y} $$</div>
+<p>therefore (the estimate of $\beta$),</p>
+$$ \hat{\mathbf{\beta}} = (X^TX)^{-1}X^T\textbf{y} $$</div>
                 <div class="markdown-cell"><h3>Hat Matrix</h3>
 $$ \hat{\textbf{y}} = X\mathbf{\beta} $$
 
@@ -208,7 +208,7 @@ $$ \hat{\textbf{y}} = H\textbf{y} $$
 <p>Suppose $U \sim \mathcal{N}(\mu, \Sigma)$, a multivariate normal vector, and $V = c + DU$, a linear<br />
 transformation of U where c is a vector and D is a matrix. Then $V \sim \mathcal{N}(c + D\mu, D\Sigma D^T)$.</p>
 <p>comparing this to SLR, we have</p>
-$$U = \textbf{y} \sim \mathcal{N}(X\mathbf{\beta}, \sigma_{\epsilon}^2I) \quad and \quad V = \mathbf{\beta} = [(X^TX)^{-1}X^T]\textbf{y}$$
+$$U = \textbf{y} \sim \mathcal{N}(X\mathbf{\beta}, \sigma_{\epsilon}^2I) \quad and \quad V = \hat{\mathbf{\beta}} = [(X^TX)^{-1}X^T]\textbf{y}$$
 
 $$D = (X^TX)^{-1}X^T$$
 
@@ -216,9 +216,9 @@ $$\mu = X\mathbf{\beta} \quad and \quad \Sigma = \sigma_{\epsilon}^2I$$
 
 $$c = \textbf{0}$$
 
-$$V = \mathbf{\beta}$$
+$$V = \hat{\mathbf{\beta}}$$
 
-<p>Above theorem tells us the vector $\mathbf{\beta}$ is normally distributed with</p>
+<p>Above theorem tells us the vector $\hat{\mathbf{\beta}}$ is normally distributed with</p>
 \begin{align}
 \text{mean} &= (X^TX)^{-1}X^TX\mathbf{\beta} \\
             &= (X^TX)^{-1}(X^TX)\mathbf{\beta} \\
@@ -235,9 +235,9 @@ $$V = \mathbf{\beta}$$
 
 <p>using the fact that both $X^TX$ and its inverse are symmetric, so $((X^TX)^{−1})^T = (X^TX)^{−1}$</p>
 <p>Hence,</p>
-$$ \mathbf{\beta} \sim \mathcal{N}(\beta, \sigma_{\epsilon}^2(X^TX)^{-1}) $$
+$$ \hat{\mathbf{\beta}} \sim \mathcal{N}(\beta, \sigma_{\epsilon}^2(X^TX)^{-1}) $$
 
-<p>Therefore, standard deviation of estimates ($\beta$) =  $\sqrt{\sigma_{\epsilon}^2(X^TX)^{-1}}$</p></div>
+<p>Therefore, standard deviation of estimates ($\hat{\mathbf{\beta}}$) =  $\sqrt{\sigma_{\epsilon}^2(X^TX)^{-1}}$</p></div>
             </div>
         </div>
     </div>
